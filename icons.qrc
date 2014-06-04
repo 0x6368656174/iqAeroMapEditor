@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/table_row_delete.png</file>
+        <file>icons/table_row_insert.png</file>
+        <file>icons/arrow_switch.png</file>
+    </qresource>
+</RCC>
