@@ -22,7 +22,7 @@
      <widget class="IqAmePointsTableWidget" name="pointTableWidget" native="true"/>
     </item>
     <item>
-     <widget class="IqLayerView" name="openGlWidget" native="true"/>
+     <widget class="IqAmeGraphicEditWidget" name="editorWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -81,12 +81,6 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>IqLayerView</class>
-   <extends>QWidget</extends>
-   <header>iqlayerview.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>IqAmePointsTableWidget</class>
    <extends>QWidget</extends>
    <header>iqamepointstablewidget.h</header>
@@ -96,6 +90,12 @@
    <class>IqAmeMapModelTreeView</class>
    <extends>QTreeView</extends>
    <header>iqamemapmodeltreeview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>IqAmeGraphicEditWidget</class>
+   <extends>QWidget</extends>
+   <header>iqamegraphiceditwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IqAmeGraphicEditWidget</class>
+ <widget class="QWidget" name="IqAmeGraphicEditWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>741</width>
+    <height>414</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="IqLayerView" name="openGlWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>373</x>
+     <y>4</y>
+     <width>364</width>
+     <height>406</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <zorder>dockWidget</zorder>
+   <zorder>dockWidget</zorder>
+  </widget>
+  <widget class="QTableView" name="shapesTableView">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>IqLayerView</class>
+   <extends>QWidget</extends>
+   <header>iqlayerview.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

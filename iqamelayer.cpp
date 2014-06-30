@@ -8,6 +8,7 @@
 
 IqAmeLayer::IqAmeLayer(QObject *parent) :
     QObject(parent),
+    _shapesModel(new IqAmeShapesModel(this)),
     _parentLayer(NULL)
 {
 }
@@ -124,15 +125,12 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
 {
     setFileName(fileName);
 
-    qDeleteAll(_shapes);
-    _shapes.clear();
-
-    if (_fileName.isEmpty())
+    if (fileName.isEmpty())
         return false;
 
-    if (!QFile::exists(_fileName))
+    if (!QFile::exists(fileName))
     {
-        QString error = tr("File \"%0\" not exist.").arg(_fileName);
+        QString error = tr("File \"%0\" not exist.").arg(fileName);
         qWarning() << error;
         if (lastError)
             *lastError = error;
@@ -142,10 +140,10 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
 
     qDebug() << tr("Starting parsing \"%0\"...").arg(fileName);
 
-    QFile file (_fileName);
+    QFile file (fileName);
     if (!file.open(QFile::ReadOnly))
     {
-        QString error = tr("Can not open \"%0\" file.").arg(_fileName);
+        QString error = tr("Can not open \"%0\" file.").arg(fileName);
         qWarning() << error;
         if (lastError)
             *lastError = error;
@@ -166,7 +164,7 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
     }
     else
     {
-        QString error = tr("Not found layer name in file \"%0\".").arg(_fileName);
+        QString error = tr("Not found layer name in file \"%0\".").arg(fileName);
         qWarning() << error;
         if (lastError)
             *lastError = error;
@@ -174,44 +172,5 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
         return false;
     }
 
-    QStringList fileStringList = fileString.split("\n");
-
-    //Удалим имя
-    fileStringList.removeFirst();
-
-    QRegExp shapeRx ("^\\s*(LINE|L|TEXT|T|SYMB|S|FILL|F|SETA|SA|SETD|SD)\\s*:");
-    shapeRx.setCaseSensitivity(Qt::CaseInsensitive);
-    QString shape;
-    QString shapeType;
-
-    foreach (QString str, fileStringList)
-    {
-        if (shapeRx.indexIn(str) != -1)
-        {
-            //Обработаем приметив
-            if (!shape.isEmpty() && (shapeType.compare("LINE", Qt::CaseInsensitive) == 0 || shapeType.compare("L", Qt::CaseInsensitive) == 0))
-            {
-                IqAmeLine *line = new IqAmeLine(this);
-                if (line->loadFromString(shape))
-                {
-                    _shapes << line;
-                }
-                else
-                {
-                    qWarning() << tr("Can not parse line string \"%0\". Skipped.").arg(shape);
-                    line->deleteLater();
-                }
-            }
-
-            //Начат новый приметив
-            shapeType = shapeRx.cap(1);
-            shape = str.trimmed();
-        }
-        else
-        {
-            shape += " " + str.trimmed();
-        }
-    }
-
-    return true;
+    return _shapesModel->loadFromFile(fileName, lastError);
 }

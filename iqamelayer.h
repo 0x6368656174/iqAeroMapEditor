@@ -2,7 +2,7 @@
 #define IQAMELAYER_H
 
 #include <QObject>
-#include "iqamegraphicobject.h"
+#include "iqameshapesmodel.h"
 
 class IqAmeLayer : public QObject
 {
@@ -24,6 +24,8 @@ public:
     void removeChildLayer(IqAmeLayer *layer);
 
     IqAmeLayer * childLayer(const qint32 index) const;
+
+    inline IqAmeShapesModel * shapesModel() const {return _shapesModel;}
 
     qint32 index() const;
 
@@ -61,7 +63,7 @@ private:
     QString _fileName;
     QString _description;
     QString _videomapName;
-    QList<IqAmeGraphicObject *> _shapes;
+    IqAmeShapesModel *_shapesModel;
 
     QList<IqAmeLayer *> _childLayers;
     IqAmeLayer * _parentLayer;

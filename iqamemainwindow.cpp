@@ -29,13 +29,14 @@ IQAMEMainWindow::~IQAMEMainWindow()
 
 void IQAMEMainWindow::showPoints()
 {
-    ui->openGlWidget->hide();
+    ui->editorWidget->hide();
     ui->pointTableWidget->show();
 }
 
 void IQAMEMainWindow::showLayer(IqAmeLayer *layer)
 {
     Q_UNUSED(layer);
+    ui->editorWidget->setLayer(layer);
     ui->pointTableWidget->hide();
-    ui->openGlWidget->show();
+    ui->editorWidget->show();
 }

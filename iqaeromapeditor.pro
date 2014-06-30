@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     iqamesubline.cpp \
     iqamelineattributes.cpp \
     iqamelinesegment.cpp \
-    iqamestraightlinesegment.cpp
+    iqamestraightlinesegment.cpp \
+    iqameshapesmodel.cpp \
+    iqamegraphiceditwidget.cpp
 
 HEADERS  += iqamemainwindow.h \
     iqameatdmenueditdialog.h \
@@ -55,11 +57,14 @@ HEADERS  += iqamemainwindow.h \
     iqamesubline.h \
     iqamelineattributes.h \
     iqamelinesegment.h \
-    iqamestraightlinesegment.h
+    iqamestraightlinesegment.h \
+    iqameshapesmodel.h \
+    iqamegraphiceditwidget.h
 
 FORMS    += iqamemainwindow.ui \
     iqameatdmenueditdialog.ui \
-    iqamepointstablewidget.ui
+    iqamepointstablewidget.ui \
+    iqamegraphiceditwidget.ui
 
 RESOURCES += \
     icons.qrc
