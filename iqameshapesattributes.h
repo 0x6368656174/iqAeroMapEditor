@@ -2,19 +2,21 @@
 #define IQAMELINEATTRIBUTES_H
 
 #include <QObject>
+#include <QColor>
 
-class IqAmeLineAttributes : public QObject
+class IqAmeShapesAttributes : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(IqAmeLineAttributes* baseAttributes READ baseAttributes WRITE setBaseAttributes NOTIFY baseAttributesChanged)
     Q_PROPERTY(Color color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(Texture texture READ texture WRITE setTexture NOTIFY textureChanged)
     Q_PROPERTY(Depth depth READ depth WRITE setDepth NOTIFY depthChanged)
     Q_PROPERTY(FillMode fillMode READ fillMode WRITE setFillMode NOTIFY fillModeChanged)
+    Q_PROPERTY(TextSize textSize READ textSize WRITE setTextSize NOTIFY textSizeChanged)
     Q_ENUMS(Color)
     Q_ENUMS(Texture)
     Q_ENUMS(Depth)
     Q_ENUMS(FillMode)
+    Q_ENUMS(TextSize)
 public:
     enum Color
     {
@@ -56,12 +58,21 @@ public:
         EmptyFill
     };
 
-    explicit IqAmeLineAttributes(QObject *parent = 0);
+    enum TextSize
+    {
+        R1,
+        R2,
+        R3,
+        R4
+    };
+
+    explicit IqAmeShapesAttributes(QObject *parent = 0);
+
+    bool loadFromString(const QString &string);
+
+    QColor toRGBColor() const;
 
 public:
-    inline IqAmeLineAttributes *baseAttributes() const {return _baseAttributes;}
-    void  setBaseAttributes(IqAmeLineAttributes *attributes);
-
     inline Color color() const {return _color;}
     void setColor(const Color color);
 
@@ -74,19 +85,22 @@ public:
     inline FillMode fillMode() const {return _fillMode;}
     void setFillMode(const FillMode fillMode);
 
+    inline TextSize textSize() const {return _textSize;}
+    void setTextSize(const TextSize textSize);
+
 signals:
-    void baseAttributesChanged();
     void colorChanged();
     void textureChanged();
     void depthChanged();
     void fillModeChanged();
+    void textSizeChanged();
 
 private:
-    IqAmeLineAttributes *_baseAttributes;
     Color _color;
     Texture _texture;
     Depth _depth;
     FillMode _fillMode;
+    TextSize _textSize;
 };
 
 #endif // IQAMELINEATTRIBUTES_H

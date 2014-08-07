@@ -1,6 +1,7 @@
 #include "iqamegeopoint.h"
 #include "iqamegeohelper.h"
 #include <QRegExp>
+#include <QDebug>
 
 IqAmeGeoPoint::IqAmeGeoPoint(QObject *parent):
     QObject(parent),
@@ -24,11 +25,32 @@ IqAmeGeoPoint::~IqAmeGeoPoint()
         _basePoint->_relativePoints.removeOne(this);
 }
 
+bool IqAmeGeoPoint::fromCoordinate(const QString &coordinate)
+{
+    QRegExp coordinateRx("([NS])([^EW]+)([EW])([^\\W]+)");
+//    coordinateRx.setCaseSensitivity(Qt::CaseInsensitive);
+    if (coordinateRx.indexIn(coordinate) != -1)
+    {
+        QString pointString = QString("%0 %1=%2 %3=%4")
+                .arg(coordinate.trimmed())
+                .arg(coordinateRx.cap(1).toUpper())
+                .arg(coordinateRx.cap(2))
+                .arg(coordinateRx.cap(3).toUpper())
+                .arg(coordinateRx.cap(4));
+
+        return fromString(pointString.trimmed());
+    }
+    return false;
+}
+
 bool IqAmeGeoPoint::fromString(const QString &string)
 {
-    QRegExp geoRx ("^(\\S+)\\s+([NS])=(\\d+)\\s+([EW])=(\\d+)\\s*(;\\s*(.*)|\\*(.*)\\*|)$");
-    QRegExp cartesianRx ("^(\\S+)(\\s+T=(\\S+)|)\\s+X=(-{0,1}\\d+.{0,1}\\d*)\\s+Y=(-{0,1}\\d+.{0,1}\\d*)\\s*(;\\s*(.*)|\\*(.*)\\*|)$");
-    QRegExp polarRx ("^(\\S+)(\\s+T=(\\S+)|)\\s+A=(-{0,1}\\d+)\\s+D=(-{0,1}\\d+.{0,1}\\d*)\\s*(;\\s*(.*)|\\*(.*)\\*|)$");
+    QRegExp geoRx ("^\\W*(\\S+)\\W+([NS])=(\\d+)\\W+([EW])=(\\d+)\\W*(;\\W*(.*)|\\*(.*)\\*|)$");
+//    geoRx.setCaseSensitivity(Qt::CaseInsensitive);
+    QRegExp cartesianRx ("^\\W*(\\S+)(\\W+T=(\\S+)|)\\W+X=(-{0,1}\\d+.{0,1}\\d*)\\W+Y=(-{0,1}\\d+.{0,1}\\d*)\\W*(;\\W*(.*)|\\*(.*)\\*|)$");
+//    cartesianRx.setCaseSensitivity(Qt::CaseInsensitive);
+    QRegExp polarRx ("^\\W*(\\S+)(\\W+T=(\\S+)|)\\W+A=(-{0,1}\\d+)\\W+D=(-{0,1}\\d+.{0,1}\\d*)\\W*(;\\W*(.*)|\\*(.*)\\*|)$");
+//    polarRx.setCaseSensitivity(Qt::CaseInsensitive);
 
     if (geoRx.indexIn(string) != -1)
     {
@@ -153,6 +175,8 @@ void IqAmeGeoPoint::setBasePoint(IqAmeGeoPoint *basePoint)
         _basePointName.clear();
 
         _basePoint->_relativePoints << this;
+
+        updateGlPointCache();
     }
 }
 
@@ -161,4 +185,29 @@ QString IqAmeGeoPoint::basePointName() const
     if (_basePoint)
         return _basePoint->name();
     return _basePointName;
+}
+
+void IqAmeGeoPoint::updateGlPointCache()
+{
+    QPointF result;
+    switch (definitionType())
+    {
+    case Cartesian:
+    {
+        result.setX(x()*1000);
+        result.setY(y()*1000);
+        break;
+    }
+    case Geo:
+    {
+        qreal x, y, z;
+        IqAmeGeoHelper::toLocalCartesian(latitude(), longitude(), 0, x, y, z);
+
+        result.setX(x);
+        result.setY(y);
+        break;
+    }
+    }
+
+    _glPointCache = result;
 }

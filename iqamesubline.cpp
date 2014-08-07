@@ -1,14 +1,39 @@
 #include "iqamesubline.h"
 #include "iqamestraightlinesegment.h"
 #include "iqameapplication.h"
+#include <QtOpenGL>
 #include <QRegExp>
 #include <QDebug>
 #include <QStringList>
 
 IqAmeSubLine::IqAmeSubLine(QObject *parent) :
     QObject(parent),
-    _attributes(new IqAmeLineAttributes(this))
+    _inputAttributes(NULL),
+    _attributes(NULL),
+    _autoUpdateBoundingBox(true)
 {
+}
+
+void IqAmeSubLine::setInputAttributes(IqAmeShapesAttributes *attributes)
+{
+    if (_inputAttributes != attributes)
+    {
+        _inputAttributes = attributes;
+
+        if (!_attributes)
+            emit outputAttributesChanged();
+
+        emit inputAttributesChanged();
+    }
+}
+
+IqAmeShapesAttributes * IqAmeSubLine::outputAttributes() const
+{
+    if (_attributes)
+    {
+        return _attributes;
+    }
+    return _inputAttributes;
 }
 
 void IqAmeSubLine::appendSegment(IqAmeLineSegment *segment)
@@ -17,6 +42,8 @@ void IqAmeSubLine::appendSegment(IqAmeLineSegment *segment)
     {
         segment->setParent(this);
         _segments.append(segment);
+
+        updateBoundingBox();
     }
 }
 
@@ -26,6 +53,8 @@ void IqAmeSubLine::insertSegment(const int position, IqAmeLineSegment *segment)
     {
         segment->setParent(this);
         _segments.insert(position, segment);
+
+        updateBoundingBox();
     }
 }
 
@@ -35,163 +64,81 @@ void IqAmeSubLine::removeSegment(IqAmeLineSegment *segment)
     {
         _segments.removeOne(segment);
         segment->deleteLater();
+
+        updateBoundingBox();
+    }
+}
+
+void IqAmeSubLine::setBoundingBox(const QRectF &boundingBox)
+{
+    if (_boundingBox != boundingBox)
+    {
+        _boundingBox = boundingBox;
+
+        emit boundingBoxChanged();
     }
 }
 
 bool IqAmeSubLine::loadFromString(const QString &string)
 {
-    QRegExp sublineRx("<\\s*(BLACK|BLUE|GREEN|CYAN|RED|MAGENTA|BROWN|WHITE|GRAY|LBLUE|LGREEN|LCYAN|"
-                      "LRED|LMAGENTA|YELLOW|BRIGHTWHITE){0,1}(\\s*,{0,1}\\s*(ffff|ff00|e4e4|aaaa)){0,1}(\\s*,{0,1}"
-                      "\\s*(normal|full)){0,1}(\\s*,{0,1}\\s*(fill|empty)){0,1}\\s*>");
-    sublineRx.setCaseSensitivity(Qt::CaseInsensitive);
+    //Отключим автоматическое обновление bbox
+    _autoUpdateBoundingBox = false;
 
-    if (sublineRx.indexIn(string) != -1)
+    QRegExp attributeRx("<\\s*[^>]*\\s*>");
+    attributeRx.setCaseSensitivity(Qt::CaseInsensitive);
+
+    if (attributeRx.indexIn(string) != -1)
     {
-        if (!sublineRx.cap(1).isEmpty())
+        //Нашли атрибуты, создадим их
+        if (!attributes())
         {
-            QString color = sublineRx.cap(1);
-
-            if (color.compare("BLACK", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Black);
-            }
-            else if (color.compare("BLUE", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Blue);
-            }
-            else if (color.compare("GREEN", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Green);
-            }
-            else if (color.compare("CYAN", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Cyan);
-            }
-            else if (color.compare("RED", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Red);
-            }
-            else if (color.compare("MAGENTA", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Magenta);
-            }
-            else if (color.compare("BROWN", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Brown);
-            }
-            else if (color.compare("WHITE", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::White);
-            }
-            else if (color.compare("GRAY", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Gray);
-            }
-            else if (color.compare("LBLUE", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::LBlue);
-            }
-            else if (color.compare("LGREEN", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::LGreen);
-            }
-            else if (color.compare("LCYAN", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::LCyan);
-            }
-            else if (color.compare("LRED", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::LRed);
-            }
-            else if (color.compare("LMAGENTA", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::LMagenta);
-            }
-            else if (color.compare("YELLOW", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::Yellow);
-            }
-            else if (color.compare("BRIGHTWHITE", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setColor(IqAmeLineAttributes::BrigthWhite);
-            }
+            setAttributes(new IqAmeShapesAttributes(this));
         }
-        if (!sublineRx.cap(3).isEmpty())
-        {
-            QString texture = sublineRx.cap(3);
-
-            if (texture.compare("ffff", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setTexture(IqAmeLineAttributes::FFFF);
-            }
-            else if (texture.compare("ff00", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setTexture(IqAmeLineAttributes::FF00);
-            }
-            else if (texture.compare("e4e4", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setTexture(IqAmeLineAttributes::E4E4);
-            }
-            else if (texture.compare("aaaa", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setTexture(IqAmeLineAttributes::AAAA);
-            }
-        }
-        if (!sublineRx.cap(5).isEmpty())
-        {
-            QString depth = sublineRx.cap(5);
-
-            if (depth.compare("normal", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setDepth(IqAmeLineAttributes::Normal);
-            }
-            else if (depth.compare("full", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setDepth(IqAmeLineAttributes::Full);
-            }
-        }
-        if (!sublineRx.cap(7).isEmpty())
-        {
-            QString fillMode = sublineRx.cap(7);
-
-            if (fillMode.compare("fill", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setFillMode(IqAmeLineAttributes::Fill);
-            }
-            else if (fillMode.compare("empty", Qt::CaseInsensitive) == 0)
-            {
-                attributes()->setFillMode(IqAmeLineAttributes::EmptyFill);
-            }
-        }
+        attributes()->loadFromString(attributeRx.cap(0));
     }
 
-    QString pointsString = string.mid(sublineRx.matchedLength());
+    QString pointsString = string.mid(attributeRx.matchedLength());
     pointsString = pointsString.trimmed();
 
     if (!pointsString.isEmpty())
     {
-        QRegExp pointRx ("([^,\\(\\)]*\\([^\\(]*\\)(,|$))|([^,\\(\\)]*(,|$))");
+        QRegExp pointRx ("(([^,\\(\\)]*\\([^\\(]*\\))(,|$))|(([^,\\(\\)]*)(,|$))");
         QRegExp circleRx ("(.*)\\((.*)\\)");
 
         int start = pointRx.indexIn(pointsString);
-        QString p1Name = pointsString.mid(start, pointRx.matchedLength() - 1);
+        QString p1Name = pointRx.cap(2) + pointRx.cap(5);
         QString p2Name = "";
 
         while (start != -1 && pointRx.matchedLength() != 0)
         {
             start = pointRx.indexIn(pointsString, start + pointRx.matchedLength());
 
-            p2Name = pointsString.mid(start, pointRx.matchedLength() - 1);
+            p2Name = pointRx.cap(2) + pointRx.cap(5);
 
             if (!p1Name.trimmed().isEmpty() && !p2Name.trimmed().isEmpty())
             {
                 if (circleRx.indexIn(p1Name) == -1)
                 {
-
                     IqAmeGeoPoint *p1 = IqAmeApplication::aeroMapModel()->pointsModel()->point(p1Name.trimmed(), Qt::CaseInsensitive);
                     if (!p1)
                     {
-                        continue;
+                        //Если не нашли точку, то попробуем ее создать
+                        IqAmeGeoPoint newPoint;
+                        if (newPoint.fromCoordinate(p1Name))
+                        {
+                            int newPointRow = IqAmeApplication::aeroMapModel()->pointsModel()->rowCount();
+                            IqAmeApplication::aeroMapModel()->pointsModel()->insertRow(newPointRow);
+                            p1 = IqAmeApplication::aeroMapModel()->pointsModel()->at(newPointRow);
+                            p1->setName(newPoint.name());
+                            p1->setLatitude(newPoint.latitude());
+                            p1->setLongitude(newPoint.longitude());
+                        }
+                        else
+                        {
+                            qWarning() << tr("Point \"%0\" not found and can not create. Skipped...").arg(p1Name);
+                            p1Name = p2Name;
+                            continue;
+                        }
                     }
 
                     if (circleRx.indexIn(p2Name) != -1)
@@ -200,7 +147,23 @@ bool IqAmeSubLine::loadFromString(const QString &string)
                     IqAmeGeoPoint *p2 = IqAmeApplication::aeroMapModel()->pointsModel()->point(p2Name.trimmed(), Qt::CaseInsensitive);
                     if (!p2)
                     {
-                        continue;
+                        //Если не нашли точку, то попробуем ее создать
+                        IqAmeGeoPoint newPoint;
+                        if (newPoint.fromCoordinate(p2Name))
+                        {
+                            int newPointRow = IqAmeApplication::aeroMapModel()->pointsModel()->rowCount();
+                            IqAmeApplication::aeroMapModel()->pointsModel()->insertRow(newPointRow);
+                            p2 = IqAmeApplication::aeroMapModel()->pointsModel()->at(newPointRow);
+                            p2->setName(newPoint.name());
+                            p2->setLatitude(newPoint.latitude());
+                            p2->setLongitude(newPoint.longitude());
+                        }
+                        else
+                        {
+                            qWarning() << tr("Point \"%0\" not found and can not create. Skipped...").arg(p2Name);
+                            p1Name = p2Name;
+                            continue;
+                        }
                     }
 
                     IqAmeStraightLineSegment *segment = new IqAmeStraightLineSegment(this);
@@ -219,5 +182,104 @@ bool IqAmeSubLine::loadFromString(const QString &string)
         }
     }
 
+    //Включим автоматическое обновление bbox
+    _autoUpdateBoundingBox = true;
+    //Обновим bbox
+    updateBoundingBox();
+
     return true;
+}
+
+void IqAmeSubLine::paingGl(const QRectF &area, IqLayerView *layerView)
+{
+    switch(outputAttributes()->texture())
+    {
+    case IqAmeShapesAttributes::FFFF:
+        glLineStipple(1,0xFFFF);
+        break;
+    case IqAmeShapesAttributes::FF00:
+        glLineStipple(1, 0xFF00);
+        break;
+    case IqAmeShapesAttributes::E4E4:
+        glLineStipple(1, 0xE4E4);
+        break;
+    case IqAmeShapesAttributes::AAAA:
+        glLineStipple(1, 0xAAAA);
+        break;
+    }
+
+    switch (outputAttributes()->depth())
+    {
+    case IqAmeShapesAttributes::Normal:
+        glLineWidth(1.0);
+        break;
+    case IqAmeShapesAttributes::Full:
+        glLineWidth(3.0);
+        break;
+    }
+
+    layerView->qglColor(outputAttributes()->toRGBColor());
+
+    foreach (IqAmeLineSegment* segment, _segments)
+    {
+        segment->paintGl(area, layerView);
+    }
+}
+
+void IqAmeSubLine::setAttributes(IqAmeShapesAttributes *attributes)
+{
+    if (_attributes != attributes)
+    {
+        _attributes = attributes;
+
+        emit attributesChanged();
+        emit outputAttributesChanged();
+    }
+}
+
+void IqAmeSubLine::updateBoundingBox()
+{
+    if (_autoUpdateBoundingBox)
+    {
+        QPointF topLeft;
+        QPointF bottomRight;
+
+        QPointF point;
+        foreach (IqAmeLineSegment* segment, _segments)
+        {
+            point = segment->startPoint()->toGlPoint();
+            if (point.x() < topLeft.x())
+            {
+                topLeft.setX(point.x());
+            } else if (point.x() > bottomRight.x())
+            {
+                bottomRight.setX(point.x());
+            }
+            if (point.y() < topLeft.y())
+            {
+                topLeft.setY(point.y());
+            } else if (point.y() > bottomRight.y())
+            {
+                bottomRight.setY(point.y());
+            }
+
+            point = segment->endPoint()->toGlPoint();
+            if (point.x() < topLeft.x())
+            {
+                topLeft.setX(point.x());
+            } else if (point.x() > bottomRight.x())
+            {
+                bottomRight.setX(point.x());
+            }
+            if (point.y() < topLeft.y())
+            {
+                topLeft.setY(point.y());
+            } else if (point.y() > bottomRight.y())
+            {
+                bottomRight.setY(point.y());
+            }
+        }
+
+        setBoundingBox(QRectF(topLeft, bottomRight));
+    }
 }

@@ -4,10 +4,12 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QDebug>
+#include <QRectF>
 #include "iqameline.h"
 
 IqAmeLayer::IqAmeLayer(QObject *parent) :
     QObject(parent),
+    _visible(false),
     _shapesModel(new IqAmeShapesModel(this)),
     _parentLayer(NULL)
 {
@@ -116,6 +118,16 @@ void IqAmeLayer::setVideomapName(const QString &videomapName)
     }
 }
 
+void IqAmeLayer::setVisible(const bool visible)
+{
+    if (_visible != visible)
+    {
+        _visible = visible;
+
+        emit visibleChanged();
+    }
+}
+
 bool IqAmeLayer::loadFromFile(QString *lastError)
 {
     return loadFromFile(fileName(), lastError);
@@ -173,4 +185,24 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
     }
 
     return _shapesModel->loadFromFile(fileName, lastError);
+}
+
+void IqAmeLayer::paindGl(const QRectF &area, IqLayerView *layerView)
+{
+    //В каждом слое, для каждого приметива вызовем функцию рисования
+    if (!shapesModel())
+        return;
+    for (int i = 0; i < shapesModel()->rowCount(); i++)
+    {
+        QModelIndex shapeIndex = shapesModel()->index(i, 0);
+        IqAmeShapeObject * shape = qvariant_cast<IqAmeShapeObject *>(shapesModel()->data(shapeIndex, IqAmeShapesModel::ShapeObject));
+
+        if (shape)
+        {
+            //Если приметив входит в область
+            QRectF boundingBox = shape->boundingBox();
+            if (area.intersects(boundingBox))
+                shape->paindGl(area, layerView);
+        }
+    }
 }

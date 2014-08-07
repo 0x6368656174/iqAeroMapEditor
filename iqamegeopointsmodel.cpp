@@ -390,7 +390,7 @@ bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastErr
         if (point->fromString(pointString.trimmed()))
         {
             //Проверим, чтоб для данного имени точки уже не была точка
-            if (!_pointsIndex.contains(point->name()))
+            if (!_pointsIndexCaseInsensitive.contains(point->name().toLower()))
             {
                 _points.append(point);
                 _pointsIndex[point->name()] = point;

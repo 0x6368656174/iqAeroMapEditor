@@ -1,19 +1,19 @@
 #ifndef IQAMELINE_H
 #define IQAMELINE_H
 
-#include "iqamegraphicobject.h"
+#include "iqameshapeobject.h"
 #include "iqamesubline.h"
 
-class IqAmeLine : public IqAmeGraphicObject
+class IqAmeLine : public IqAmeShapeObject
 {
     Q_OBJECT
-    Q_PROPERTY(IqAmeLineAttributes* baseAttributes READ baseAttributes WRITE setBaseAttributes NOTIFY baseAttributesChanged)
-
 public:
 
     explicit IqAmeLine(QObject *parent = 0);
 
-    bool loadFromString(const QString &string);
+    virtual void paindGl(const QRectF &area, IqLayerView *layerView);
+
+    virtual bool loadFromString(const QString &string);
 
     void appendSubLine(IqAmeSubLine *subLine);
 
@@ -22,16 +22,16 @@ public:
     void removeSubLine(IqAmeSubLine *subLine);
 
 public:
-    inline IqAmeLineAttributes *baseAttributes() const {return _baseAttributes;}
-    void  setBaseAttributes(IqAmeLineAttributes *attributes);
-
-signals:
-    void baseAttributesChanged();
+    inline virtual IqAmeShapesAttributes * outputAttributes() const {return _outputAttributes;}
 
 private:
-    IqAmeLineAttributes *_baseAttributes;
-
     QList<IqAmeSubLine *> _subLines;
+    IqAmeShapesAttributes * _outputAttributes;
+    bool _autoUpdateBoundingBox;
+
+    void setOutputAttributes(IqAmeShapesAttributes * outputAttributes);
+
+    void updateBoundingBox();
 };
 
 #endif // IQAMELINE_H

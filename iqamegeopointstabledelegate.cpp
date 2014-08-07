@@ -30,7 +30,6 @@ QWidget * IqAmeGeoPointsTableDelegate::createEditor(QWidget *parent, const QStyl
         editor->addItem(tr("Polar"));
 
         return editor;
-        break;
     }
 
     case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
@@ -46,7 +45,6 @@ QWidget * IqAmeGeoPointsTableDelegate::createEditor(QWidget *parent, const QStyl
         editor->setCompleter(completer);
 
         return editor;
-        break;
     }
     }
 
@@ -86,7 +84,6 @@ void IqAmeGeoPointsTableDelegate::setEditorData(QWidget *editor, const QModelInd
             break;
         }
         return;
-        break;
     }
 
     case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
@@ -99,7 +96,6 @@ void IqAmeGeoPointsTableDelegate::setEditorData(QWidget *editor, const QModelInd
 
         lineEdit->setText(currentBasePointName);
         return;
-        break;
     }
     }
 
@@ -142,7 +138,6 @@ void IqAmeGeoPointsTableDelegate::setModelData(QWidget *editor, QAbstractItemMod
 
         model->setData(model->index(index.row(), IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN), QVariant());
         return;
-        break;
     }
     case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
     {
@@ -174,7 +169,6 @@ void IqAmeGeoPointsTableDelegate::setModelData(QWidget *editor, QAbstractItemMod
 
         model->setData(model->index(index.row(), IqAmeGeoPointsModel::BASE_POINT_COLUMN), QVariant());
         return;
-        break;
     }
     }
 

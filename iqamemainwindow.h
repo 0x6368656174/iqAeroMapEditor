@@ -2,6 +2,7 @@
 #define IQAMEMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QModelIndex>
 
 namespace Ui {
 class IQAMEMainWindow;

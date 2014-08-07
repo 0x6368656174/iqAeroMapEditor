@@ -24,7 +24,8 @@ public:
                       const QModelIndex &parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const{ Q_UNUSED(parent); return 2;}
+    int columnCount(const QModelIndex &parent = QModelIndex()) const{ Q_UNUSED(parent); return 3;}
+    bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
 
 private:
     void clear();

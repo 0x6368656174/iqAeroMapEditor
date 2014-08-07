@@ -30,14 +30,15 @@ SOURCES += main.cpp\
     iqamegeopointstableview.cpp \
     iqamepointstablewidget.cpp \
     iqamemapmodeltreeview.cpp \
-    iqamegraphicobject.cpp \
     iqameline.cpp \
     iqamesubline.cpp \
-    iqamelineattributes.cpp \
     iqamelinesegment.cpp \
     iqamestraightlinesegment.cpp \
     iqameshapesmodel.cpp \
-    iqamegraphiceditwidget.cpp
+    iqamegraphiceditwidget.cpp \
+    iqameshapesattributes.cpp \
+    iqameshapeobject.cpp \
+    iqametext.cpp
 
 HEADERS  += iqamemainwindow.h \
     iqameatdmenueditdialog.h \
@@ -52,14 +53,15 @@ HEADERS  += iqamemainwindow.h \
     iqamegeopointstableview.h \
     iqamepointstablewidget.h \
     iqamemapmodeltreeview.h \
-    iqamegraphicobject.h \
     iqameline.h \
     iqamesubline.h \
-    iqamelineattributes.h \
     iqamelinesegment.h \
     iqamestraightlinesegment.h \
     iqameshapesmodel.h \
-    iqamegraphiceditwidget.h
+    iqamegraphiceditwidget.h \
+    iqameshapesattributes.h \
+    iqameshapeobject.h \
+    iqametext.h
 
 FORMS    += iqamemainwindow.ui \
     iqameatdmenueditdialog.ui \

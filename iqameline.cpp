@@ -1,15 +1,31 @@
 #include "iqameline.h"
 #include <QRegExp>
 #include <QDebug>
+#include <QRectF>
 
 IqAmeLine::IqAmeLine(QObject *parent) :
-    IqAmeGraphicObject(parent),
-    _baseAttributes(NULL)
+    IqAmeShapeObject(parent),
+    _outputAttributes(NULL),
+    _autoUpdateBoundingBox(true)
 {
+}
+
+void IqAmeLine::setOutputAttributes(IqAmeShapesAttributes *outputAttributes)
+{
+    if (_outputAttributes != outputAttributes)
+    {
+        _outputAttributes = outputAttributes;
+
+        emit outputAttributesChanged();
+    }
 }
 
 bool IqAmeLine::loadFromString(const QString &string)
 {
+    //Отключим автоматическое обновление bbox
+    _autoUpdateBoundingBox = false;
+
+    //    qDebug() << "Load Line :" << string;
     QRegExp lineRx("^\\s*(LINE|L)\\s*:\\s*(\\*([^\\*]*)\\*){0,1}");
     lineRx.setCaseSensitivity(Qt::CaseInsensitive);
     if (lineRx.indexIn(string) == -1)
@@ -21,32 +37,33 @@ bool IqAmeLine::loadFromString(const QString &string)
     QString clearString = string.mid(lineRx.matchedLength());
 
     //Выделим комментарий
-    QRegExp commentRx("\\*(.*)\\*[^\\*]*$");
+    QRegExp commentRx("\\*([^\\*]*)\\*\\W*$");
     if (commentRx.indexIn(clearString) != -1)
         setComment(commentRx.cap(1));
 
     //Удалим все комментарии из строки
-    QRegExp extraCommentsRx("\\*+[^\\*]*\\*+");
+    QRegExp extraCommentsRx("\\*[^\\*]*\\*");
     clearString.remove(extraCommentsRx);
 
-    //Разделим на подлинии
-    QRegExp sublineRx("<\\s*(BLACK|BLUE|GREEN|CYAN|RED|MAGENTA|BROWN|WHITE|GRAY|LBLUE|LGREEN|LCYAN|"
-                      "LRED|LMAGENTA|YELLOW|BRIGHTWHITE){0,1}(\\s*,{0,1}\\s*(ffff|ff00|e4e4|aaaa)){0,1}(\\s*,{0,1}"
-                      "\\s*(normal|full)){0,1}(\\s*,{0,1}\\s*(fill|empty)){0,1}\\s*>");
-    sublineRx.setCaseSensitivity(Qt::CaseInsensitive);
+    //Разделим на подлинии на основе атрибутов
+    QRegExp attributeRx("<\\s*[^>]*\\s*>");
+    attributeRx.setCaseSensitivity(Qt::CaseInsensitive);
 
-    IqAmeLineAttributes *bAttribute = baseAttributes();
-    int start = sublineRx.indexIn(clearString);
-    int end = sublineRx.indexIn(clearString, start + 1);
+    IqAmeShapesAttributes *previosSublineOutputAttribute = inputAttributes();
+    setOutputAttributes(previosSublineOutputAttribute);
+
+    int start = attributeRx.indexIn(clearString);
+    int end = attributeRx.indexIn(clearString, start + 1);
 
     if (start == -1 && end == -1)
     {
         IqAmeSubLine *subline = new IqAmeSubLine(this);
-        subline->attributes()->setBaseAttributes(bAttribute);
+        subline->setInputAttributes(previosSublineOutputAttribute);
         if (subline->loadFromString(clearString))
         {
             appendSubLine(subline);
-            bAttribute = subline->attributes();
+            previosSublineOutputAttribute = subline->outputAttributes();
+            setOutputAttributes(previosSublineOutputAttribute);
         }
         else
         {
@@ -57,7 +74,7 @@ bool IqAmeLine::loadFromString(const QString &string)
     while (start != -1)
     {
         IqAmeSubLine *subline = new IqAmeSubLine(this);
-        subline->attributes()->setBaseAttributes(bAttribute);
+        subline->setInputAttributes(previosSublineOutputAttribute);
 
         QString sublineString;
         if (end != -1)
@@ -72,7 +89,8 @@ bool IqAmeLine::loadFromString(const QString &string)
         if (subline->loadFromString(sublineString))
         {
             appendSubLine(subline);
-            bAttribute = subline->attributes();
+            previosSublineOutputAttribute = subline->outputAttributes();
+            setOutputAttributes(previosSublineOutputAttribute);
         }
         else
         {
@@ -81,8 +99,13 @@ bool IqAmeLine::loadFromString(const QString &string)
         }
 
         start = end;
-        end = sublineRx.indexIn(clearString, start + 1);
+        end = attributeRx.indexIn(clearString, start + 1);
     }
+
+    //Включим автоматическое обновление bbox
+    _autoUpdateBoundingBox = true;
+    //Обновим bbox
+    updateBoundingBox();
 
     return true;
 }
@@ -93,6 +116,8 @@ void IqAmeLine::appendSubLine(IqAmeSubLine *subLine)
     {
         subLine->setParent(this);
         _subLines.append(subLine);
+
+        updateBoundingBox();
     }
 }
 
@@ -102,6 +127,8 @@ void IqAmeLine::insertSubLine(const int position, IqAmeSubLine *subLine)
     {
         subLine->setParent(this);
         _subLines.insert(position, subLine);
+
+        updateBoundingBox();
     }
 }
 
@@ -111,15 +138,35 @@ void IqAmeLine::removeSubLine(IqAmeSubLine *subLine)
     {
         _subLines.removeOne(subLine);
         subLine->deleteLater();
+
+        updateBoundingBox();
     }
 }
 
-void IqAmeLine::setBaseAttributes(IqAmeLineAttributes *attributes)
+void IqAmeLine::paindGl(const QRectF &area, IqLayerView *layerView)
 {
-    if (_baseAttributes != attributes)
+    foreach (IqAmeSubLine *subLine, _subLines)
     {
-        _baseAttributes = attributes;
+        //Если приметив входит в область
+        QRectF boundingBox = subLine->boundingBox();
+        if (area.intersects(boundingBox))
+            subLine->paingGl(area, layerView);
+    }
+}
 
-        emit baseAttributesChanged();
+void IqAmeLine::updateBoundingBox()
+{
+    if (_autoUpdateBoundingBox)
+    {
+        QRectF result;
+        QRectF subLineBoundingBox;
+
+        foreach (IqAmeSubLine *subLine, _subLines)
+        {
+            subLineBoundingBox = subLine->boundingBox();
+            result = result.unite(subLineBoundingBox);
+        }
+
+        setBoundingBox(result);
     }
 }

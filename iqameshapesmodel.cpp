@@ -2,6 +2,7 @@
 #include "iqameshapesmodel.h"
 
 #include "iqameline.h"
+#include "iqametext.h"
 
 #include <QFile>
 #include <QDebug>
@@ -9,7 +10,8 @@
 #include <QStringList>
 
 IqAmeShapesModel::IqAmeShapesModel(QObject *parent) :
-    QAbstractTableModel(parent)
+    QAbstractTableModel(parent),
+    _baseAttributes(new IqAmeShapesAttributes(this))
 {
 }
 
@@ -41,7 +43,7 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
         return false;
     }
 
-    qDebug() << tr("Starting parsing \"%0\"...").arg(fileName);
+    qDebug() << tr("Starting parsing shapes from \"%0\"...").arg(fileName);
 
     QFile file (fileName);
     if (!file.open(QFile::ReadOnly))
@@ -56,7 +58,7 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
 
     QByteArray fileData = file.readAll();
 
-    QString fileString = IqAmeApplication::defaultTextCodec()->toUnicode(fileData);
+    QString fileString = QTextCodec::codecForName("IBM866")->toUnicode(fileData);
 
     QStringList fileStringList = fileString.split("\n");
 
@@ -65,20 +67,44 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
 
     QRegExp shapeRx ("^\\s*(LINE|L|TEXT|T|SYMB|S|FILL|F|SETA|SA|SETD|SD)\\s*:");
     shapeRx.setCaseSensitivity(Qt::CaseInsensitive);
-    QString shape;
-    QString shapeType;
 
+    QStringList shapes;
+    QStringList shapeTypes;
     foreach (QString str, fileStringList)
     {
         if (shapeRx.indexIn(str) != -1)
         {
-            //Обработаем приметив
-            if (!shape.isEmpty() && (shapeType.compare("LINE", Qt::CaseInsensitive) == 0 || shapeType.compare("L", Qt::CaseInsensitive) == 0))
+            shapes.append(str.trimmed());
+            shapeTypes.append(shapeRx.cap(1));
+        }
+        else
+        {
+            if (shapes.count() > 0)
+                shapes.last().append(str.trimmed());
+        }
+    }
+
+    //Уберем подряд идущие запятые, т.к. это ошибка синтаксиса
+    QRegExp doubleCommaRx(",[\\s,]*,");
+
+    IqAmeShapesAttributes *previosShapeOutputAttribute = _baseAttributes;
+
+    for (int i = 0; i < shapes.count(); i++)
+    {
+        //Обработаем приметив
+        QString shape = shapes[i];
+        shape.replace(doubleCommaRx, ",");
+        QString shapeType = shapeTypes[i];
+        if (!shape.isEmpty())
+        {
+            if (shapeType.compare("LINE", Qt::CaseInsensitive) == 0 || shapeType.compare("L", Qt::CaseInsensitive) == 0)
             {
                 IqAmeLine *line = new IqAmeLine(this);
+                line->setInputAttributes(previosShapeOutputAttribute);
                 if (line->loadFromString(shape))
                 {
                     _shapes << line;
+                    previosShapeOutputAttribute = line->outputAttributes();
                 }
                 else
                 {
@@ -86,14 +112,21 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
                     line->deleteLater();
                 }
             }
-
-            //Начат новый приметив
-            shapeType = shapeRx.cap(1);
-            shape = str.trimmed();
-        }
-        else
-        {
-            shape += " " + str.trimmed();
+            else if (shapeType.compare("TEXT", Qt::CaseInsensitive) == 0 || shapeType.compare("T", Qt::CaseInsensitive) == 0)
+            {
+                IqAmeText *text = new IqAmeText(this);
+                text->setInputAttributes(previosShapeOutputAttribute);
+                if (text->loadFromString(shape))
+                {
+                    _shapes << text;
+                    previosShapeOutputAttribute = text->outputAttributes();
+                }
+                else
+                {
+                    qWarning() << tr("Can not parse text string \"%0\". Skipped.").arg(shape);
+                    text->deleteLater();
+                }
+            }
         }
     }
 
@@ -105,7 +138,7 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
     if (index.row() < 0 || index.row() >= rowCount())
         return QVariant();
 
-    IqAmeGraphicObject *shape = _shapes.at(index.row());
+    IqAmeShapeObject *shape = _shapes.at(index.row());
 
     if (!shape)
         return QVariant();
@@ -123,18 +156,25 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
             {
                 return "L";
             }
+            IqAmeText *text = qobject_cast<IqAmeText *>(shape);
+            if (text)
+            {
+                return "T";
+            }
 
             break;
         }
         case NAME_COLUMN:
         {
             return shape->name();
-
-            break;
         }
         }
 
         break;
+    }
+    case ShapeObject:
+    {
+        return QVariant::fromValue(shape);
     }
     }
 

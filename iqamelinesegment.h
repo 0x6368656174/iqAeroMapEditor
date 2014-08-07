@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include "iqamegeopoint.h"
+#include <QRectF>
+#include "iqlayerview.h"
 
 class IqAmeLineSegment : public QObject
 {
@@ -12,6 +14,8 @@ class IqAmeLineSegment : public QObject
 
 public:
     explicit IqAmeLineSegment(QObject *parent = 0);
+
+    virtual void paintGl(const QRectF &area, IqLayerView *layerView) = 0;
 
 public:
     inline IqAmeGeoPoint *startPoint() const {return _startPoint;}

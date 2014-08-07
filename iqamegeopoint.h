@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QPointF>
 
 class IqAmeGeoPoint : public QObject
 {
@@ -20,30 +21,32 @@ public:
 
     bool fromString(const QString &string);
 
+    bool fromCoordinate(const QString &coordinate);
+
 public:
     inline QString name() const {return _name;}
     inline void setName(const QString &name) {_name = name;}
 
     inline DefinitionType definitionType() const {return _definitionType;}
-    inline void setDefinitionType(const DefinitionType definitionType) {_definitionType = definitionType;}
+    inline void setDefinitionType(const DefinitionType definitionType) {_definitionType = definitionType; updateGlPointCache();}
 
     inline qreal latitude() const {return _latitude;}
-    inline void setLatitude(const qreal latitude) {_latitude = latitude;}
+    inline void setLatitude(const qreal latitude) {_latitude = latitude; updateGlPointCache();}
 
     inline qreal longitude() const {return _longitude;}
-    inline void setLongitude(const qreal longitude) {_longitude = longitude;}
+    inline void setLongitude(const qreal longitude) {_longitude = longitude; updateGlPointCache();}
 
     inline qreal x() const {return _x;}
-    inline void setX(const qreal x) {_x = x;}
+    inline void setX(const qreal x) {_x = x; updateGlPointCache();}
 
     inline qreal y() const {return _y;}
-    inline void setY(const qreal y) {_y = y;}
+    inline void setY(const qreal y) {_y = y; updateGlPointCache();}
 
     inline qreal angle() const {return _angle;}
-    inline void setAngle(const qreal angle) {_angle = angle;}
+    inline void setAngle(const qreal angle) {_angle = angle; updateGlPointCache();}
 
     inline qreal distance() const {return _distance;}
-    inline void setDistance(const qreal distance) {_distance = distance;}
+    inline void setDistance(const qreal distance) {_distance = distance; updateGlPointCache();}
 
     inline IqAmeGeoPoint * basePoint() const {return _basePoint;}
     void setBasePoint(IqAmeGeoPoint *basePoint);
@@ -54,6 +57,8 @@ public:
     inline void setComment(const QString &comment) {_comment = comment;}
 
     inline QList<IqAmeGeoPoint *> relativePoints() const {return _relativePoints;}
+
+    inline QPointF toGlPoint() const {return _glPointCache;}
 
 private:
     QString _name;
@@ -68,6 +73,9 @@ private:
     QString _basePointName;
     QString _comment;
     QList<IqAmeGeoPoint *> _relativePoints;
+    QPointF _glPointCache;
+
+    void updateGlPointCache();
 };
 
 #endif // IQAMEGEOPOINT_H

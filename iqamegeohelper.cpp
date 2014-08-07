@@ -2,18 +2,34 @@
 #include <math.h>
 #include <QRegExp>
 
+IqAmeGeoHelper * IqAmeGeoHelper::_instance = NULL;
+
 IqAmeGeoHelper::IqAmeGeoHelper()
 {
 }
 
+IqAmeGeoHelper * IqAmeGeoHelper::instance()
+{
+    if (IqAmeGeoHelper::_instance)
+    {
+        return IqAmeGeoHelper::_instance;
+    }
+    else
+    {
+        IqAmeGeoHelper::_instance = new IqAmeGeoHelper();
+        return IqAmeGeoHelper::_instance;
+    }
+    return NULL;
+}
+
 void IqAmeGeoHelper::setLocalCartesianOrigin(const qreal latitude, const qreal longitude)
 {
-    _localCartesian = LocalCartesian(latitude, longitude, 0);
+    IqAmeGeoHelper::instance()->_localCartesian = LocalCartesian(latitude, longitude, 0);
 }
 
 void IqAmeGeoHelper::toLocalCartesian(const qreal latitude, const qreal longitude, const qreal altitude,  qreal &x, qreal &y, qreal &z)
 {
-    _localCartesian.Forward(latitude, longitude, altitude, x, y, z);
+    IqAmeGeoHelper::instance()->_localCartesian.Forward(latitude, longitude, altitude, x, y, z);
 }
 
 bool IqAmeGeoHelper::coordinateFromString(const QString &string, qreal &latitude, qreal &longitude)

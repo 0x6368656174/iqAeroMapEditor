@@ -29,5 +29,6 @@ void IqAmeGraphicEditWidget::setLayer(IqAmeLayer *layer)
     if (layer)
     {
         ui->shapesTableView->setModel(layer->shapesModel());
+        ui->openGlWidget->addLayerToView(layer);
     }
 }

@@ -2,7 +2,9 @@
 #define IQAMESHAPESMODEL_H
 
 #include <QAbstractTableModel>
-#include "iqamegraphicobject.h"
+#include "iqameshapeobject.h"
+#include "iqameshapesattributes.h"
+
 
 class IqAmeShapesModel : public QAbstractTableModel
 {
@@ -12,6 +14,11 @@ public:
     {
         TYPE_COLUMN,
         NAME_COLUMN
+    };
+
+    enum Roles
+    {
+        ShapeObject = Qt::UserRole
     };
 
     explicit IqAmeShapesModel(QObject *parent = 0);
@@ -26,7 +33,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const {Q_UNUSED(parent); return _shapes.count();}
 
 private:
-    QList<IqAmeGraphicObject *> _shapes;
+    QList<IqAmeShapeObject *> _shapes;
+
+    IqAmeShapesAttributes *_baseAttributes;
 
     void clear();
 };

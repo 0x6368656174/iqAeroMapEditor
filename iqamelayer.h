@@ -2,6 +2,8 @@
 #define IQAMELAYER_H
 
 #include <QObject>
+#include <QRectF>
+#include "iqlayerview.h"
 #include "iqameshapesmodel.h"
 
 class IqAmeLayer : public QObject
@@ -13,7 +15,7 @@ class IqAmeLayer : public QObject
     Q_PROPERTY(IqAmeLayer * parentLayer READ parentLayer NOTIFY parentLayerChanged)
     Q_PROPERTY(qint32 childLayersCount READ childLayersCount NOTIFY childLayersCountChanged)
     Q_PROPERTY(QString videomapName READ videomapName WRITE setVideomapName NOTIFY videomapNameChanged)
-
+    Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
 public:
     explicit IqAmeLayer(QObject *parent = 0);
 
@@ -33,6 +35,8 @@ public:
 
     bool loadFromFile(QString *lastError = NULL);
 
+    void paindGl(const QRectF &area, IqLayerView *layerView);
+
 public:
     inline QString atdMenuName() const {return _atdMenuName;}
     void setAtdMenuName(const QString &atdMenuName);
@@ -50,6 +54,9 @@ public:
     inline QString videomapName() const {return _videomapName;}
     void setVideomapName(const QString &videomapName);
 
+    inline bool visible() const {return _visible;}
+    void setVisible(const bool visible);
+
 signals:
     void atdMenuNameChanged();
     void fileNameChanged();
@@ -57,12 +64,14 @@ signals:
     void parentLayerChanged();
     void childLayersCountChanged();
     void videomapNameChanged();
+    void visibleChanged();
 
 private:
     QString _atdMenuName;
     QString _fileName;
     QString _description;
     QString _videomapName;
+    bool _visible;
     IqAmeShapesModel *_shapesModel;
 
     QList<IqAmeLayer *> _childLayers;

@@ -10,11 +10,9 @@ using namespace GeographicLib;
 class IqAmeGeoHelper
 {
 public:
-    IqAmeGeoHelper();
+    static void setLocalCartesianOrigin(const qreal latitude, const qreal longitude);
 
-    void setLocalCartesianOrigin(const qreal latitude, const qreal longitude);
-
-    void toLocalCartesian(const qreal latitude, const qreal longitude, const qreal altitude, qreal &x, qreal &y, qreal &z);
+    static void toLocalCartesian(const qreal latitude, const qreal longitude, const qreal altitude, qreal &x, qreal &y, qreal &z);
 
     static bool coordinateFromString(const QString &string, qreal &latitude, qreal &longitude);
 
@@ -29,6 +27,9 @@ public:
     static QString longitudeToString(const qreal longitude, bool pretty = false);
 
 private:
+    IqAmeGeoHelper();
+    static IqAmeGeoHelper *_instance;
+    static IqAmeGeoHelper * instance();
     LocalCartesian _localCartesian;
 };
 
