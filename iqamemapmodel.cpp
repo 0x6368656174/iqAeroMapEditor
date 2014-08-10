@@ -14,6 +14,7 @@
 #include <QStringList>
 #include <QFont>
 #include <QDebug>
+#include <QThread>
 #include "iqameapplication.h"
 
 IqAmeMapModel::IqAmeMapModel(QObject *parent) :
@@ -52,21 +53,21 @@ void IqAmeMapModel::endLoadData()
 
 bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError)
 {
-    //Удалим все дочерние слои
-    if (rowCount() > 0)
-    {
-        QList<IqAmeLayer *> childs = _rootLayer->childLayers();
-        foreach (IqAmeLayer * layer, childs)
-        {
-            _rootLayer->removeChildLayer(layer);
-        }
-    }
+    IqAmeLayer *newRootLayer = new IqAmeLayer();
+
+    //Удалим старый слой
+    _rootLayer->deleteLater();
+    _rootLayer = new IqAmeLayer();
+    _rootLayer->moveToThread(this->thread());
+    _rootLayer->setParent(this);
 
     if (!QFile::exists(folderName))
     {
         if (lastError)
             *lastError = tr("Folder \"%0\" not exist.").arg(folderName);
+        qWarning() << tr("Folder \"%0\" not exist.").arg(folderName);
 
+        newRootLayer->deleteLater();
         return false;
     }
 
@@ -75,7 +76,9 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     {
         if (lastError)
             *lastError = tr("Error on load points file\"%0\".").arg(folderName + "/" + HABAR_W_FILE_NAME);
+        qWarning() << tr("Error on load points file\"%0\".").arg(folderName + "/" + HABAR_W_FILE_NAME);
 
+        newRootLayer->deleteLater();
         return false;
     }
 
@@ -83,7 +86,9 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     {
         if (lastError)
             *lastError = tr("File \"%0\" not exist.").arg(folderName + "/" + MAPLAB_FILE_NAME);
+        qWarning() << tr("File \"%0\" not exist.").arg(folderName + "/" + MAPLAB_FILE_NAME);
 
+        newRootLayer->deleteLater();
         return false;
     }
 
@@ -91,7 +96,9 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     {
         if (lastError)
             *lastError = tr("File \"%0\" not exist.").arg(folderName + "/" + HABAR_2_FILE_NAME);
+        qWarning() << tr("File \"%0\" not exist.").arg(folderName + "/" + HABAR_2_FILE_NAME);
 
+        newRootLayer->deleteLater();
         return false;
     }
 
@@ -100,7 +107,9 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     {
         if (lastError)
             *lastError = tr("Can not open \"%0\" file.").arg(folderName + "/" + MAPLAB_FILE_NAME);
+        qWarning() << tr("Can not open \"%0\" file.").arg(folderName + "/" + MAPLAB_FILE_NAME);
 
+        newRootLayer->deleteLater();
         return false;
     }
 
@@ -109,7 +118,9 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     {
         if (lastError)
             *lastError = tr("Can not open \"%0\" file.").arg(folderName + "/" + HABAR_2_FILE_NAME);
+        qWarning() << tr("Can not open \"%0\" file.").arg(folderName + "/" + HABAR_2_FILE_NAME);
 
+        newRootLayer->deleteLater();
         return false;
     }
 
@@ -122,10 +133,10 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     QStringList maplabaStringList = maplabStrin.split("\n");
     QStringList habar2StringList = habar2String.split("\n");
 
-    IqAmeLayer *parentLayer = _rootLayer;
+    IqAmeLayer *parentLayer = newRootLayer;
 
     //Добавим пустой слой, в то место, где отображаются точки
-    IqAmeLayer *nullLayer = new IqAmeLayer(this);
+    IqAmeLayer *nullLayer = new IqAmeLayer(newRootLayer);
     parentLayer->appendChildLayer(nullLayer);
 
     //    IqAmeLayer *routesSWLayer = new IqAmeLayer(this);
@@ -134,16 +145,15 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     //    routesSWLayer->loadFromFile(folderName + "/HABSEC.SLD");
     //    parentLayer->appendChildLayer(routesSWLayer);
 
-
     //Добавим слой с трассами
-    IqAmeLayer *routesSWLayer = new IqAmeLayer(this);
+    IqAmeLayer *routesSWLayer = new IqAmeLayer(newRootLayer);
     routesSWLayer->setAtdMenuName(tr("ROUTES"));
     routesSWLayer->setFileName(folderName + "/" + ROUTES_W_FILE_NAME);
     routesSWLayer->loadFromFile(folderName + "/" + ROUTES_W_FILE_NAME);
     parentLayer->appendChildLayer(routesSWLayer);
 
     //Добавим слой с точками
-    IqAmeLayer *pointsSWLayer = new IqAmeLayer(this);
+    IqAmeLayer *pointsSWLayer = new IqAmeLayer(newRootLayer);
     pointsSWLayer->setAtdMenuName(tr("POINTS"));
     pointsSWLayer->setFileName(folderName + "/" + POINTS_W_FILE_NAME);
     pointsSWLayer->loadFromFile(folderName + "/" + POINTS_W_FILE_NAME);
@@ -162,7 +172,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
         QRegExp menuContainerRx ("\\*(.+)\\*");
         if (menuContainerRx.indexIn(maplabLine) > -1)
         {
-            IqAmeLayer *newParentLayer = new IqAmeLayer(this);
+            IqAmeLayer *newParentLayer = new IqAmeLayer(parentLayer);
             newParentLayer->setAtdMenuName(menuContainerRx.cap(1));
             parentLayer->appendChildLayer(newParentLayer);
             parentLayer = newParentLayer;
@@ -176,11 +186,13 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
 
             if (lastError)
                 *lastError = tr("The file \"%0\" is not enough lines.").arg(folderName + "/" + HABAR_2_FILE_NAME);
+            qWarning() << tr("The file \"%0\" is not enough lines.").arg(folderName + "/" + HABAR_2_FILE_NAME);
 
+            newRootLayer->deleteLater();
             return false;
         }
 
-        IqAmeLayer *newSublineLayer = new IqAmeLayer(this);
+        IqAmeLayer *newSublineLayer = new IqAmeLayer(parentLayer);
         newSublineLayer->setAtdMenuName(maplabLine.trimmed());
         newSublineLayer->setFileName(habar2StringList[habar2Index].trimmed() + ".sld");
         if (newSublineLayer->loadFromFile(folderName + "/" + newSublineLayer->fileName().toUpper(), lastError))
@@ -194,6 +206,13 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
         }
         habar2Index++;
     }
+
+    //Изменяем поток для нового слоя
+    newRootLayer->moveToThread(this->thread());
+    newRootLayer->setParent(this);
+    //Заменим старый слой на новый
+    _rootLayer->deleteLater();
+    _rootLayer = newRootLayer;
 
     return true;
 }

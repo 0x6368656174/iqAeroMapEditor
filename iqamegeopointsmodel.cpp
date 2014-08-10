@@ -368,6 +368,8 @@ void IqAmeGeoPointsModel::endLoadData()
 
 bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastError)
 {
+    qDebug() << tr("Starting parsing \"%0\"...").arg(fileName);
+
     //Удалим старые данные
     qDeleteAll(_points);
     _points.clear();
@@ -379,6 +381,7 @@ bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastErr
     {
         if (lastError)
             *lastError = tr("Can not open \"%0\" file.").arg(fileName);
+        qWarning() << tr("Can not open \"%0\" file.").arg(fileName);
 
         return false;
     }

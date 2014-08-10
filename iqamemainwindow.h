@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QModelIndex>
+#include <QTime>
+#include "iqamelogdialog.h"
+
 
 namespace Ui {
 class IQAMEMainWindow;
@@ -22,9 +25,13 @@ private slots:
     void showPoints();
     void showLayer(IqAmeLayer *layer);
     void openFolder();
+    void showLogs();
+    void onLoadFinished();
 
 private:
     Ui::IQAMEMainWindow *ui;
+    IqAmeLogDialog *_logDialog;
+    QTime _loadTimer;
 };
 
 #endif // IQAMEMAINWINDOW_H
