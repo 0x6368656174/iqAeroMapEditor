@@ -10,17 +10,18 @@ class IQAMEMainWindow;
 
 class IqAmeLayer;
 
-class IQAMEMainWindow : public QMainWindow
+class IqAmeMainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit IQAMEMainWindow(QWidget *parent = 0);
-    ~IQAMEMainWindow();
+    explicit IqAmeMainWindow(QWidget *parent = 0);
+    ~IqAmeMainWindow();
 
 private slots:
     void showPoints();
     void showLayer(IqAmeLayer *layer);
+    void openFolder();
 
 private:
     Ui::IQAMEMainWindow *ui;

@@ -4,6 +4,7 @@
 #include <QDebug>
 #include "iqamelayer.h"
 #include "iqamegeohelper.h"
+#include "iqameapplication.h"
 
 using namespace GeographicLib;
 
@@ -13,6 +14,7 @@ IqLayerView::IqLayerView(QWidget *parent) :
     _center(QPoint(0, 0)),
     _translationEnabled(false)
 {
+    connect(IqAmeApplication::aeroMapModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(repaint()));
     IqAmeGeoHelper::setLocalCartesianOrigin(48 + 31/60.0 + 41/3600.0, 135 + 11/60.0 + 70/3600.0); //Хабаровск
 }
 
@@ -82,12 +84,6 @@ void IqLayerView::mouseMoveEvent(QMouseEvent *event)
     }
 }
 
-void IqLayerView::addLayerToView(IqAmeLayer *layer)
-{
-    _visibleLayers.append(layer);
-    repaint();
-}
-
 void IqLayerView::resizeGL(int nWidth, int nHeight)
 {
     glMatrixMode(GL_PROJECTION);
@@ -119,10 +115,14 @@ void IqLayerView::paintGL()
     area.setTopLeft(mapToGeo(QPoint(0, 0)));
     area.setBottomRight(mapToGeo(QPoint(width(), height())));
 
-    //Продемся по всем видимым слоям
-    foreach (IqAmeLayer *layer, _visibleLayers)
+    //Продемся по всем слоям
+    foreach (IqAmeLayer *layer, IqAmeApplication::aeroMapModel()->rootLayer()->allChildLayers())
     {
-        //Прорисуем каждый слой
-        layer->paindGl(area, this);
+        //Если слой видимый
+        if (layer->visible())
+        {
+            //Прорисуем каждый слой
+            layer->paindGl(area, this);
+        }
     }
 }

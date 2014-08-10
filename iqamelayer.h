@@ -27,6 +27,10 @@ public:
 
     IqAmeLayer * childLayer(const qint32 index) const;
 
+    inline QList<IqAmeLayer *> childLayers() const {return _childLayers;}
+
+    QList<IqAmeLayer *> allChildLayers() const;
+
     inline IqAmeShapesModel * shapesModel() const {return _shapesModel;}
 
     qint32 index() const;

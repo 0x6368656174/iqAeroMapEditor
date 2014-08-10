@@ -24,6 +24,10 @@ public:
 
     explicit IqAmeGeoPointsModel(QObject *parent = 0);
 
+    void startLoadData();
+
+    void endLoadData();
+
     ~IqAmeGeoPointsModel();
 
     bool loadFromFile(const QString &fileName, QString *lastError = 0);

@@ -11,6 +11,7 @@ IqAmeLayer::IqAmeLayer(QObject *parent) :
     QObject(parent),
     _visible(false),
     _shapesModel(new IqAmeShapesModel(this)),
+    _childLayers(QList<IqAmeLayer *>()),
     _parentLayer(NULL)
 {
 }
@@ -205,4 +206,19 @@ void IqAmeLayer::paindGl(const QRectF &area, IqLayerView *layerView)
                 shape->paindGl(area, layerView);
         }
     }
+}
+
+QList<IqAmeLayer *> IqAmeLayer::allChildLayers() const
+{
+    QList<IqAmeLayer *> result;
+    foreach (IqAmeLayer* layer, _childLayers)
+    {
+        if (layer)
+        {
+            result << layer;
+            result << layer->allChildLayers();
+        }
+    }
+
+    return result;
 }

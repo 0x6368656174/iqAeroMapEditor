@@ -18,19 +18,49 @@
 
 IqAmeMapModel::IqAmeMapModel(QObject *parent) :
     QAbstractItemModel(parent),
-    _rootLayer(NULL),
+    _rootLayer(new IqAmeLayer(this)),
     _pointsModel(new IqAmeGeoPointsModel(this))
 {
 }
 
 void IqAmeMapModel::clear()
 {
+    //Удалим все дочерние слои
+    if (rowCount() > 0)
+    {
+        emit beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
+        QList<IqAmeLayer *> childs = _rootLayer->childLayers();
+        foreach (IqAmeLayer * layer, childs)
+        {
+            _rootLayer->removeChildLayer(layer);
+        }
+        emit endRemoveRows();
+    }
+}
 
+void IqAmeMapModel::startLoadData()
+{
+    _pointsModel->startLoadData();
+    beginResetModel();
+}
+
+void IqAmeMapModel::endLoadData()
+{
+    _pointsModel->endLoadData();
+    endResetModel();
 }
 
 bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError)
 {
-    clear();
+    //Удалим все дочерние слои
+    if (rowCount() > 0)
+    {
+        QList<IqAmeLayer *> childs = _rootLayer->childLayers();
+        foreach (IqAmeLayer * layer, childs)
+        {
+            _rootLayer->removeChildLayer(layer);
+        }
+    }
 
     if (!QFile::exists(folderName))
     {
@@ -45,6 +75,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     {
         if (lastError)
             *lastError = tr("Error on load points file\"%0\".").arg(folderName + "/" + HABAR_W_FILE_NAME);
+
         return false;
     }
 
@@ -81,8 +112,6 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
 
         return false;
     }
-
-    _rootLayer = new IqAmeLayer(this);
 
     QByteArray maplabData = maplabFile.readAll();
     QByteArray habar2Data = habar2File.readAll();
@@ -351,7 +380,7 @@ Qt::ItemFlags IqAmeMapModel::flags(const QModelIndex &index) const
 
     Qt::ItemFlags result = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-    if (index.column() == COLUMN_VISIBLE && index.row() > 0)
+    if (index.column() == COLUMN_VISIBLE && (index.row() > 0 || index.parent().isValid()))
         result |= Qt::ItemIsUserCheckable | Qt::ItemIsEditable;
 
     return result;
@@ -359,27 +388,36 @@ Qt::ItemFlags IqAmeMapModel::flags(const QModelIndex &index) const
 
 QVariant IqAmeMapModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+    switch (orientation) {
+    case Qt::Horizontal:
     {
-        if (section == COLUMN_VISIBLE)
+        switch (role) {
+        case Qt::DisplayRole:
         {
-            return tr("Visible");
+            switch (section) {
+            case COLUMN_VISIBLE:
+                return tr("V");
+            case COLUMN_ATD_NAME:
+                return tr("ATD Menu Name");
+            case COLUMN_FILE_NAME:
+                return tr("File Name");
+            }
         }
-        if (section == COLUMN_ATD_NAME)
-        {
-            return tr("ATD Menu Name");
-        }
-        else if (section == COLUMN_FILE_NAME)
-        {
-            return tr("File Name");
+        case Qt::TextAlignmentRole:
+            return Qt::AlignHCenter;
         }
     }
+    case Qt::Vertical:
+        break;
+    }
 
-    return QVariant();
+    return QAbstractItemModel::headerData(section, orientation, role);
 }
 
 bool IqAmeMapModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    Q_UNUSED(role);
+
     if (!index.isValid())
         return false;
 

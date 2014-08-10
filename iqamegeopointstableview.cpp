@@ -14,7 +14,7 @@ IqAmeGeoPointsTableView::IqAmeGeoPointsTableView(QWidget *parent) :
     _removePointAction(new QAction(this)),
     _pointDependingAction(new QAction(this)),
     _geoPointModel(NULL),
-    _sortFilterModel(new QSortFilterProxyModel(this)),
+    _sortFilterModel(new IqAmeGeoPointsSortFilterModel(this)),
     _delegate(new IqAmeGeoPointsTableDelegate(this))
 {
     setItemDelegate(_delegate);
@@ -97,9 +97,23 @@ void IqAmeGeoPointsTableView::setModel(IqAmeGeoPointsModel *model)
     {
         _geoPointModel = model;
 
-        _delegate->setSourceGeoPointsModel(_geoPointModel);
-        _sortFilterModel->setSourceModel(_geoPointModel);
+        connect(_geoPointModel, SIGNAL(modelAboutToBeReset()), this, SLOT(disableSortModel()));
+        connect(_geoPointModel, SIGNAL(modelReset()), this, SLOT(enableSortModel()));
     }
+}
+
+void IqAmeGeoPointsTableView::disableSortModel()
+{
+    _delegate->setSourceGeoPointsModel(NULL);
+    _sortFilterModel->setSourceModel(NULL);
+}
+
+void IqAmeGeoPointsTableView::enableSortModel()
+{
+
+    _delegate->setSourceGeoPointsModel(_geoPointModel);
+    _sortFilterModel->setSourceModel(_geoPointModel);
+    _sortFilterModel->invalidate();
 }
 
 void IqAmeGeoPointsTableView::findBasePoint()

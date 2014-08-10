@@ -149,7 +149,7 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
-        case TYPE_COLUMN:
+        case COLUMN_TYPE:
         {
             IqAmeLine *line = qobject_cast<IqAmeLine *>(shape);
             if (line)
@@ -164,7 +164,7 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
 
             break;
         }
-        case NAME_COLUMN:
+        case COLUMN_NAME:
         {
             return shape->name();
         }
@@ -179,4 +179,30 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
     }
 
     return QVariant();
+}
+
+QVariant IqAmeShapesModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (orientation == Qt::Horizontal)
+    {
+        switch (role)
+        {
+        case Qt::DisplayRole:
+        {
+            switch (section)
+            {
+            case COLUMN_TYPE:
+            {
+                return tr("Type");
+            }
+            case COLUMN_NAME:
+            {
+                return tr("Name");
+            }
+            }
+        }
+        }
+    }
+
+    return QAbstractTableModel::headerData(section, orientation, role);
 }

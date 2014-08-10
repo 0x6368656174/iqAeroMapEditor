@@ -15,7 +15,6 @@ public:
     explicit IqLayerView(QWidget *parent = 0);
 
 //    void setCurrentLayer(const IqAmeLayer *layer);
-    void addLayerToView( IqAmeLayer *layer);
 
     QPointF mapToGeo(const QPoint &screenPoint) const;
 
@@ -30,7 +29,6 @@ protected:
     void mouseMoveEvent(QMouseEvent * event);
 
 private:
-    QList<IqAmeLayer *> _visibleLayers;
     qreal _zoomFactor;
     QPoint _center;
     QPoint _pressCenter;

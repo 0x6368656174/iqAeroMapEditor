@@ -2,6 +2,7 @@
 #include "ui_iqamegraphiceditwidget.h"
 #include <QSplitter>
 #include <QHBoxLayout>
+#include <QHeaderView>
 
 IqAmeGraphicEditWidget::IqAmeGraphicEditWidget(QWidget *parent) :
     QWidget(parent),
@@ -29,6 +30,12 @@ void IqAmeGraphicEditWidget::setLayer(IqAmeLayer *layer)
     if (layer)
     {
         ui->shapesTableView->setModel(layer->shapesModel());
-        ui->openGlWidget->addLayerToView(layer);
+#if QT_VERSION >= 0x050000
+        ui->shapesTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+        ui->shapesTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+#else
+        ui->shapesTableView->horizontalHeader()->setResizeMode(0, QHeaderView::ResizeToContents);
+        ui->shapesTableView->horizontalHeader()->setResizeMode(1, QHeaderView::Stretch);
+#endif
     }
 }

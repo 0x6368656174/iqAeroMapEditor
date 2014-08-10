@@ -22,7 +22,9 @@
      <widget class="IqAmePointsTableWidget" name="pointTableWidget" native="true"/>
     </item>
     <item>
-     <widget class="IqAmeGraphicEditWidget" name="editorWidget" native="true"/>
+     <widget class="IqAmeGraphicEditWidget" name="editorWidget" native="true">
+      <zorder>pointTableWidget</zorder>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -64,6 +66,8 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -75,6 +79,11 @@
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
    </property>
   </action>
  </widget>
@@ -99,5 +108,22 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionClose</sender>
+   <signal>triggered()</signal>
+   <receiver>IQAMEMainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>321</x>
+     <y>183</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>321</x>
+     <y>183</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

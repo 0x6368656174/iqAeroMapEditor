@@ -2,7 +2,7 @@
 #define IQAMEGEOPOINTSTABLEVIEW_H
 
 #include <QTableView>
-#include <QSortFilterProxyModel>
+#include "iqamegeopointssortfiltermodel.h"
 #include "iqamegeopointsmodel.h"
 #include "iqamegeopointstabledelegate.h"
 
@@ -31,6 +31,10 @@ private slots:
 
     void checkSelection();
 
+    void disableSortModel();
+
+    void enableSortModel();
+
 private:
     QMenu *_contextMenu;
     QAction *_findBasePointAction;
@@ -39,7 +43,7 @@ private:
     QAction *_pointDependingAction;
     QModelIndex _currentIndex;
     IqAmeGeoPointsModel *_geoPointModel;
-    QSortFilterProxyModel *_sortFilterModel;
+    IqAmeGeoPointsSortFilterModel *_sortFilterModel;
     IqAmeGeoPointsTableDelegate *_delegate;
 
     bool rowAvailableToBeRemoved(const int row);

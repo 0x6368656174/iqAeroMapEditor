@@ -1,15 +1,13 @@
 #include "iqamemainwindow.h"
 #include "ui_iqamemainwindow.h"
 #include "iqameapplication.h"
+#include <QFileDialog>
 
-
-IQAMEMainWindow::IQAMEMainWindow(QWidget *parent) :
+IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::IQAMEMainWindow)
 {
     ui->setupUi(this);
-
-    IqAmeApplication::aeroMapModel()->loadFromFolder("/mnt/windows/mapsData/");
 
     ui->layerTreeView->setModel(IqAmeApplication::aeroMapModel());
     connect(ui->layerTreeView, SIGNAL(pointsClicked()), this, SLOT(showPoints()));
@@ -17,23 +15,45 @@ IQAMEMainWindow::IQAMEMainWindow(QWidget *parent) :
 
     ui->pointTableWidget->setModel(IqAmeApplication::aeroMapModel()->pointsModel());
 
-    QItemSelection pointSelection (ui->layerTreeView->model()->index(0, 0),
-                                   ui->layerTreeView->model()->index(0, 1));
-    ui->layerTreeView->selectionModel()->select(pointSelection, QItemSelectionModel::Select | QItemSelectionModel::Current);
+#if QT_VERSION >= 0x050000
+        ui->layerTreeView->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+        ui->layerTreeView->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+        ui->layerTreeView->header()->setSectionResizeMode(2, QHeaderView::Stretch);
+#else
+        ui->layerTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+        ui->layerTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+        ui->layerTreeView->header()->setResizeMode(2, QHeaderView::Stretch);
+#endif
+
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFolder()));
+
+    ui->editorWidget->hide();
+    ui->pointTableWidget->show();
 }
 
-IQAMEMainWindow::~IQAMEMainWindow()
+IqAmeMainWindow::~IqAmeMainWindow()
 {
     delete ui;
 }
 
-void IQAMEMainWindow::showPoints()
+void IqAmeMainWindow::openFolder()
+{
+    QString folder = QFileDialog::getExistingDirectory(this, tr("Open folder"));
+    if (!folder.isEmpty())
+    {
+        IqAmeApplication::aeroMapModel()->startLoadData();
+        IqAmeApplication::aeroMapModel()->loadFromFolder(folder);
+        IqAmeApplication::aeroMapModel()->endLoadData();
+    }
+}
+
+void IqAmeMainWindow::showPoints()
 {
     ui->editorWidget->hide();
     ui->pointTableWidget->show();
 }
 
-void IQAMEMainWindow::showLayer(IqAmeLayer *layer)
+void IqAmeMainWindow::showLayer(IqAmeLayer *layer)
 {
     Q_UNUSED(layer);
     ui->editorWidget->setLayer(layer);

@@ -12,8 +12,8 @@ class IqAmeShapesModel : public QAbstractTableModel
 public:
     enum ColumnsPosition
     {
-        TYPE_COLUMN,
-        NAME_COLUMN
+        COLUMN_TYPE,
+        COLUMN_NAME
     };
 
     enum Roles
@@ -27,6 +27,8 @@ public:
 
 public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const;
 
     int columnCount(const QModelIndex &parent = QModelIndex()) const {Q_UNUSED(parent); return 2;}
 

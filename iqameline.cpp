@@ -164,7 +164,7 @@ void IqAmeLine::updateBoundingBox()
         foreach (IqAmeSubLine *subLine, _subLines)
         {
             subLineBoundingBox = subLine->boundingBox();
-            result = result.unite(subLineBoundingBox);
+            result = result.united(subLineBoundingBox);
         }
 
         setBoundingBox(result);

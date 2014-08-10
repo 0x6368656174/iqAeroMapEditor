@@ -11,9 +11,15 @@ class IqAmeMapModel : public QAbstractItemModel
 public:
     explicit IqAmeMapModel(QObject *parent = 0);
 
+    void startLoadData();
+
+    void endLoadData();
+
     bool loadFromFolder(const QString& folderName, QString *lastError = NULL);
 
     inline IqAmeGeoPointsModel* pointsModel() const {return _pointsModel;}
+
+    inline IqAmeLayer * rootLayer() const {return _rootLayer;}
 
 public:
     QVariant data(const QModelIndex &index, int role) const;

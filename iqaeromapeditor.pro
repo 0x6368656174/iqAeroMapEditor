@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     iqamegraphiceditwidget.cpp \
     iqameshapesattributes.cpp \
     iqameshapeobject.cpp \
-    iqametext.cpp
+    iqametext.cpp \
+    iqamegeopointssortfiltermodel.cpp
 
 HEADERS  += iqamemainwindow.h \
     iqameatdmenueditdialog.h \
@@ -61,7 +62,8 @@ HEADERS  += iqamemainwindow.h \
     iqamegraphiceditwidget.h \
     iqameshapesattributes.h \
     iqameshapeobject.h \
-    iqametext.h
+    iqametext.h \
+    iqamegeopointssortfiltermodel.h
 
 FORMS    += iqamemainwindow.ui \
     iqameatdmenueditdialog.ui \

@@ -356,8 +356,24 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+void IqAmeGeoPointsModel::startLoadData()
+{
+    beginResetModel();
+}
+
+void IqAmeGeoPointsModel::endLoadData()
+{
+    endResetModel();
+}
+
 bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastError)
 {
+    //Удалим старые данные
+    qDeleteAll(_points);
+    _points.clear();
+    _pointsIndex.clear();
+    _pointsIndexCaseInsensitive.clear();
+
     QFile pointsFile (fileName);
     if (!pointsFile.open(QFile::ReadOnly))
     {
