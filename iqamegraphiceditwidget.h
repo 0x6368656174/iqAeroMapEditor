@@ -12,7 +12,7 @@ class IqAmeGraphicEditWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit IqAmeGraphicEditWidget(QWidget *parent = 0);
+    explicit IqAmeGraphicEditWidget(QWidget *parent = Q_NULLPTR);
     ~IqAmeGraphicEditWidget();
 
     void setLayer(IqAmeLayer *layer);

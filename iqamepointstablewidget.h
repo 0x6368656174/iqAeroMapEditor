@@ -13,7 +13,7 @@ class IqAmePointsTableWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit IqAmePointsTableWidget(QWidget *parent = 0);
+    explicit IqAmePointsTableWidget(QWidget *parent = Q_NULLPTR);
     ~IqAmePointsTableWidget();
 
     void setModel(IqAmeGeoPointsModel *model);

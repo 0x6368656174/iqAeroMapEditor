@@ -9,36 +9,43 @@ class IqAmeMapModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit IqAmeMapModel(QObject *parent = 0);
+    explicit IqAmeMapModel(QObject *parent = Q_NULLPTR);
 
     void startLoadData();
 
     void endLoadData();
 
-    bool loadFromFolder(const QString& folderName, QString *lastError = NULL);
+    bool loadFromFolder(const QString& folderName, QString *lastError = Q_NULLPTR);
 
-    inline IqAmeGeoPointsModel* pointsModel() const {return _pointsModel;}
+    IqAmeGeoPointsModel *pointsModel() const;
 
-    inline IqAmeLayer * rootLayer() const {return _rootLayer;}
+    IqAmeLayer *rootLayer() const;
 
 public:
-    QVariant data(const QModelIndex &index, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex &index) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const{ Q_UNUSED(parent); return 3;}
-    bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+    virtual QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
+
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
+
+    virtual QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+
+    virtual QModelIndex index(int row, int column,
+                      const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+    virtual QModelIndex parent(const QModelIndex &index) const Q_DECL_OVERRIDE;
+
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+    virtual bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole) Q_DECL_OVERRIDE;
 
 private:
     void clear();
 
-    IqAmeLayer *_rootLayer;
+    IqAmeLayer *m_rootLayer;
 
-    IqAmeGeoPointsModel *_pointsModel;
+    IqAmeGeoPointsModel *m_pointsModel;
 };
 
 #endif // IQAMEMAPMODEL_H

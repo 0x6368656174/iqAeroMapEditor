@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QColor>
+#include <QPen>
+#include <QFont>
 
 class IqAmeShapesAttributes : public QObject
 {
@@ -12,6 +14,9 @@ class IqAmeShapesAttributes : public QObject
     Q_PROPERTY(Depth depth READ depth WRITE setDepth NOTIFY depthChanged)
     Q_PROPERTY(FillMode fillMode READ fillMode WRITE setFillMode NOTIFY fillModeChanged)
     Q_PROPERTY(TextSize textSize READ textSize WRITE setTextSize NOTIFY textSizeChanged)
+    Q_PROPERTY(QColor rgbColor READ rgbColor NOTIFY rgbColorChanged)
+    Q_PROPERTY(QPen pen READ pen NOTIFY penChanged)
+    Q_PROPERTY(QFont font READ font NOTIFY fontChanged)
     Q_ENUMS(Color)
     Q_ENUMS(Texture)
     Q_ENUMS(Depth)
@@ -66,26 +71,30 @@ public:
         R4
     };
 
-    explicit IqAmeShapesAttributes(QObject *parent = 0);
+    explicit IqAmeShapesAttributes(QObject *parent = Q_NULLPTR);
 
     bool loadFromString(const QString &string);
 
-    QColor toRGBColor() const;
+    QColor rgbColor() const;
+
+    QPen pen() const;
+
+    QFont font() const;
 
 public:
-    inline Color color() const {return _color;}
+    Color color() const;
     void setColor(const Color color);
 
-    inline Texture texture() const {return _texture;}
+    Texture texture() const;
     void setTexture(const Texture texture);
 
-    inline Depth depth() const {return _depth;}
+    Depth depth() const;
     void setDepth(const Depth depth);
 
-    inline FillMode fillMode() const {return _fillMode;}
+    FillMode fillMode() const;
     void setFillMode(const FillMode fillMode);
 
-    inline TextSize textSize() const {return _textSize;}
+    TextSize textSize() const;
     void setTextSize(const TextSize textSize);
 
 signals:
@@ -94,13 +103,16 @@ signals:
     void depthChanged();
     void fillModeChanged();
     void textSizeChanged();
+    void rgbColorChanged();
+    void penChanged();
+    void fontChanged();
 
 private:
-    Color _color;
-    Texture _texture;
-    Depth _depth;
-    FillMode _fillMode;
-    TextSize _textSize;
+    Color m_color;
+    Texture m_texture;
+    Depth m_depth;
+    FillMode m_fillMode;
+    TextSize m_textSize;
 };
 
 #endif // IQAMELINEATTRIBUTES_H

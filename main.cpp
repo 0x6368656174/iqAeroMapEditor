@@ -6,22 +6,29 @@
 
 #if QT_VERSION >= 0x050000
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString msgToWrite (msg);
+    msgToWrite.append(QString("(file: %0, funcion: %1, line: %2)")
+               .arg(context.file)
+               .arg(context.function)
+               .arg(context.line));
 #else
 void myMessageOutput(QtMsgType type, const char *msg)
-#endif
 {
+    QString msgToWrite (msg);
+#endif
     switch (type) {
     case QtDebugMsg:
-        IqAmeLogDialog::addToDebug(msg);
+        IqAmeLogDialog::addToDebug(msgToWrite);
         break;
     case QtWarningMsg:
-        IqAmeLogDialog::addToWarning(msg);
+        IqAmeLogDialog::addToWarning(msgToWrite);
         break;
     case QtCriticalMsg:
-        IqAmeLogDialog::addToCritical(msg);
+        IqAmeLogDialog::addToCritical(msgToWrite);
         break;
     case QtFatalMsg:
-        IqAmeLogDialog::addToFatal(msg);
+        IqAmeLogDialog::addToFatal(msgToWrite);
         abort();
     }
 

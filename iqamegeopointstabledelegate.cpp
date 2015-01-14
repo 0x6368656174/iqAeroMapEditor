@@ -9,21 +9,19 @@
 
 IqAmeGeoPointsTableDelegate::IqAmeGeoPointsTableDelegate(QObject *parent) :
     QStyledItemDelegate(parent),
-    _sourceGeoPointsModel(NULL)
+    m_sourceGeoPointsModel(Q_NULLPTR)
 {
 }
 
 void IqAmeGeoPointsTableDelegate::setSourceGeoPointsModel(IqAmeGeoPointsModel *model)
 {
-    _sourceGeoPointsModel = model;
+    m_sourceGeoPointsModel = model;
 }
 
 QWidget * IqAmeGeoPointsTableDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    switch (index.column())
-    {
-    case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN:
-    {
+    switch (index.column()) {
+    case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN: {
         QComboBox *editor = new QComboBox(parent);
         editor->addItem(tr("Geo"));
         editor->addItem(tr("Cartesian"));
@@ -32,8 +30,7 @@ QWidget * IqAmeGeoPointsTableDelegate::createEditor(QWidget *parent, const QStyl
         return editor;
     }
 
-    case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
-    {
+    case IqAmeGeoPointsModel::BASE_POINT_COLUMN: {
         QLineEdit *editor = new QLineEdit(parent);
 
         QCompleter *completer = new QCompleter(editor);
@@ -53,10 +50,8 @@ QWidget * IqAmeGeoPointsTableDelegate::createEditor(QWidget *parent, const QStyl
 
 void IqAmeGeoPointsTableDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    switch (index.column())
-    {
-    case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN:
-    {
+    switch (index.column()) {
+    case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN: {
         if (!editor)
             return;
 
@@ -64,15 +59,14 @@ void IqAmeGeoPointsTableDelegate::setEditorData(QWidget *editor, const QModelInd
         if (!comboBox)
             return;
 
-        if (!_sourceGeoPointsModel)
+        if (!m_sourceGeoPointsModel)
             return;
 
-        IqAmeGeoPoint *point = _sourceGeoPointsModel->point(index.model()->data(index.model()->index(index.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
+        IqAmeGeoPoint *point = m_sourceGeoPointsModel->point(index.model()->data(index.model()->index(index.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
         if (!point)
             return;
 
-        switch (point->definitionType())
-        {
+        switch (point->definitionType()) {
         case IqAmeGeoPoint::Geo:
             comboBox->setCurrentIndex(0);
             break;
@@ -86,8 +80,7 @@ void IqAmeGeoPointsTableDelegate::setEditorData(QWidget *editor, const QModelInd
         return;
     }
 
-    case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
-    {
+    case IqAmeGeoPointsModel::BASE_POINT_COLUMN: {
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor);
         if (!lineEdit)
             return;
@@ -104,10 +97,8 @@ void IqAmeGeoPointsTableDelegate::setEditorData(QWidget *editor, const QModelInd
 
 void IqAmeGeoPointsTableDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    switch (index.column())
-    {
-    case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN:
-    {
+    switch (index.column()) {
+    case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN: {
         if (!editor)
             return;
 
@@ -115,16 +106,15 @@ void IqAmeGeoPointsTableDelegate::setModelData(QWidget *editor, QAbstractItemMod
         if (!comboBox)
             return;
 
-        if (!_sourceGeoPointsModel)
+        if (!m_sourceGeoPointsModel)
             return;
 
 
-        IqAmeGeoPoint *point = _sourceGeoPointsModel->point(model->data(model->index(index.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
+        IqAmeGeoPoint *point = m_sourceGeoPointsModel->point(model->data(model->index(index.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
         if (!point)
             return;
 
-        switch (comboBox->currentIndex())
-        {
+        switch (comboBox->currentIndex()) {
         case 0:
             point->setDefinitionType(IqAmeGeoPoint::Geo);
             break;
@@ -139,29 +129,25 @@ void IqAmeGeoPointsTableDelegate::setModelData(QWidget *editor, QAbstractItemMod
         model->setData(model->index(index.row(), IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN), QVariant());
         return;
     }
-    case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
-    {
+    case IqAmeGeoPointsModel::BASE_POINT_COLUMN: {
         QLineEdit *lineEdit = qobject_cast<QLineEdit *>(editor);
         if (!lineEdit)
             return;
 
-        if (!_sourceGeoPointsModel)
+        if (!m_sourceGeoPointsModel)
             return;
 
-        IqAmeGeoPoint *point = _sourceGeoPointsModel->point(model->data(model->index(index.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
+        IqAmeGeoPoint *point = m_sourceGeoPointsModel->point(model->data(model->index(index.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
         if (!point)
             return;
 
-        if (lineEdit->text().isEmpty())
-        {
-            point->setBasePoint(NULL);
-        }
-        else
-        {
-            IqAmeGeoPoint *basePoint = _sourceGeoPointsModel->point(lineEdit->text(), Qt::CaseInsensitive);
+        if (lineEdit->text().isEmpty()) {
+            point->setBasePoint(Q_NULLPTR);
+        } else {
+            IqAmeGeoPoint *basePoint = m_sourceGeoPointsModel->point(lineEdit->text(), Qt::CaseInsensitive);
 
             if (!basePoint)
-                QMessageBox::warning(NULL, tr("Base point setting failed."), tr("Point with name \"%0\" not exist.")
+                QMessageBox::warning(Q_NULLPTR, tr("Base point setting failed."), tr("Point with name \"%0\" not exist.")
                                      .arg(lineEdit->text()));
 
             point->setBasePoint(basePoint);

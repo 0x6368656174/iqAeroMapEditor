@@ -2,19 +2,45 @@
 #include <QRegExp>
 #include <QDebug>
 #include <QRectF>
+#include "iqameapplication.h"
 
 IqAmeLine::IqAmeLine(QObject *parent) :
-    IqAmeShapeObject(parent),
-    _outputAttributes(NULL),
-    _autoUpdateBoundingBox(true)
+    IqAmeNamedShapeObject(parent),
+    m_outputAttributes(Q_NULLPTR),
+    m_graphicsItem(Q_NULLPTR)
+{
+}
+
+IqAmeLine::~IqAmeLine()
+{
+    if (m_graphicsItem)
+        delete m_graphicsItem;
+}
+
+IqAmeLineGraphicsItem *IqAmeLine::graphicsItem()
+{
+    if (!m_graphicsItem) {
+        m_graphicsItem = new IqAmeLineGraphicsItem();
+        m_graphicsItem->setLine(this);
+
+        foreach (IqAmeSubLine *subLine, m_subLines) {
+            Q_CHECK_PTR(subLine);
+            m_graphicsItem->addToGroup(subLine->graphicsItem());
+        }
+    }
+
+    return m_graphicsItem;
+}
+
+void IqAmeLine::updateGraphicsItem()
 {
 }
 
 void IqAmeLine::setOutputAttributes(IqAmeShapesAttributes *outputAttributes)
 {
-    if (_outputAttributes != outputAttributes)
+    if (m_outputAttributes != outputAttributes)
     {
-        _outputAttributes = outputAttributes;
+        m_outputAttributes = outputAttributes;
 
         emit outputAttributesChanged();
     }
@@ -22,9 +48,6 @@ void IqAmeLine::setOutputAttributes(IqAmeShapesAttributes *outputAttributes)
 
 bool IqAmeLine::loadFromString(const QString &string)
 {
-    //Отключим автоматическое обновление bbox
-    _autoUpdateBoundingBox = false;
-
     //    qDebug() << "Load Line :" << string;
     QRegExp lineRx("^\\s*(LINE|L)\\s*:\\s*(\\*([^\\*]*)\\*){0,1}");
     lineRx.setCaseSensitivity(Qt::CaseInsensitive);
@@ -102,11 +125,6 @@ bool IqAmeLine::loadFromString(const QString &string)
         end = attributeRx.indexIn(clearString, start + 1);
     }
 
-    //Включим автоматическое обновление bbox
-    _autoUpdateBoundingBox = true;
-    //Обновим bbox
-    updateBoundingBox();
-
     return true;
 }
 
@@ -115,9 +133,8 @@ void IqAmeLine::appendSubLine(IqAmeSubLine *subLine)
     if (subLine)
     {
         subLine->setParent(this);
-        _subLines.append(subLine);
-
-        updateBoundingBox();
+        m_subLines.append(subLine);
+        graphicsItem()->addToGroup(subLine->graphicsItem());
     }
 }
 
@@ -126,9 +143,8 @@ void IqAmeLine::insertSubLine(const int position, IqAmeSubLine *subLine)
     if (subLine)
     {
         subLine->setParent(this);
-        _subLines.insert(position, subLine);
-
-        updateBoundingBox();
+        m_subLines.insert(position, subLine);
+        graphicsItem()->addToGroup(subLine->graphicsItem());
     }
 }
 
@@ -136,37 +152,18 @@ void IqAmeLine::removeSubLine(IqAmeSubLine *subLine)
 {
     if (subLine)
     {
-        _subLines.removeOne(subLine);
+        m_subLines.removeOne(subLine);
+        graphicsItem()->removeFromGroup(subLine->graphicsItem());
         subLine->deleteLater();
-
-        updateBoundingBox();
     }
 }
 
-void IqAmeLine::paindGl(const QRectF &area, IqLayerView *layerView)
+QList<IqAmeSubLine *> IqAmeLine::subLines() const
 {
-    foreach (IqAmeSubLine *subLine, _subLines)
-    {
-        //Если приметив входит в область
-        QRectF boundingBox = subLine->boundingBox();
-        if (area.intersects(boundingBox))
-            subLine->paingGl(area, layerView);
-    }
+    return m_subLines;
 }
 
-void IqAmeLine::updateBoundingBox()
+IqAmeShapesAttributes *IqAmeLine::outputAttributes() const
 {
-    if (_autoUpdateBoundingBox)
-    {
-        QRectF result;
-        QRectF subLineBoundingBox;
-
-        foreach (IqAmeSubLine *subLine, _subLines)
-        {
-            subLineBoundingBox = subLine->boundingBox();
-            result = result.united(subLineBoundingBox);
-        }
-
-        setBoundingBox(result);
-    }
+    return m_outputAttributes;
 }

@@ -3,30 +3,62 @@
 #include "iqameapplication.h"
 #include <QRegExp>
 #include <QDebug>
+#include "iqameapplication.h"
 
 IqAmeText::IqAmeText(QObject *parent) :
-    IqAmeShapeObject(parent),
-    _point(NULL)
+    IqAmeNamedShapeObject(parent),
+    m_point(Q_NULLPTR),
+    m_graphicsTextItem(Q_NULLPTR)
 {
+}
+
+IqAmeText::~IqAmeText()
+{
+    if (m_graphicsTextItem && !m_graphicsTextItem->parentItem())
+        delete m_graphicsTextItem;
+}
+
+IqAmeTextGraphicsItem *IqAmeText::graphicsItem()
+{
+    if (!m_graphicsTextItem) {
+        if (point() && outputAttributes()) {
+            m_graphicsTextItem = new IqAmeTextGraphicsItem();
+            m_graphicsTextItem->setText(this);
+            m_graphicsTextItem->updateCache();
+        }
+    }
+
+    return m_graphicsTextItem;
+}
+
+void IqAmeText::updateGraphicsItem()
+{
+    QGraphicsSimpleTextItem *textItem = graphicsItem();
+    if (textItem) {
+        textItem->setText(text());
+        textItem->setPos(point()->toGlPoint());
+        textItem->setBrush(QBrush(outputAttributes()->rgbColor()));
+    }
 }
 
 void IqAmeText::setText(const QString &text)
 {
-    if (_text != text)
-    {
-        _text = text;
+    if (m_text != text) {
+        m_text = text;
 
         emit textChanged();
     }
 }
 
+IqAmeGeoPoint *IqAmeText::point() const
+{
+    return m_point;
+}
+
 void IqAmeText::setPoint(IqAmeGeoPoint *geoPoint)
 {
-    if (_point != geoPoint)
-    {
-        _point = geoPoint;
-
-        updateBoundingBox();
+    if (m_point != geoPoint) {
+        m_point = geoPoint;
         emit pointChanged();
     }
 }
@@ -57,11 +89,9 @@ bool IqAmeText::loadFromString(const QString &string)
     QRegExp attributeRx("(<\\s*[^>]*\\s*>)(.*)");
     attributeRx.setCaseSensitivity(Qt::CaseInsensitive);
 
-    if (attributeRx.indexIn(string) != -1)
-    {
+    if (attributeRx.indexIn(string) != -1) {
         //Нашли атрибуты, создадим их
-        if (!attributes())
-        {
+        if (!attributes()) {
             setAttributes(new IqAmeShapesAttributes(this));
         }
         attributes()->loadFromString(attributeRx.cap(1));
@@ -72,26 +102,21 @@ bool IqAmeText::loadFromString(const QString &string)
 
     QRegExp stringRx("([^\\/]*)\\s*\\/([^\\/]*)\\/");
 
-    if (stringRx.indexIn(textString) != -1)
-    {
+    if (stringRx.indexIn(textString) != -1) {
         QString pName = stringRx.cap(1);
 
         IqAmeGeoPoint *p = IqAmeApplication::aeroMapModel()->pointsModel()->point(pName.trimmed(), Qt::CaseInsensitive);
-        if (!p)
-        {
+        if (!p) {
             //Если не нашли точку, то попробуем ее создать
             IqAmeGeoPoint newPoint;
-            if (newPoint.fromCoordinate(pName))
-            {
+            if (newPoint.fromCoordinate(pName)) {
                 int newPointRow = IqAmeApplication::aeroMapModel()->pointsModel()->rowCount();
                 IqAmeApplication::aeroMapModel()->pointsModel()->insertRow(newPointRow);
                 p = IqAmeApplication::aeroMapModel()->pointsModel()->at(newPointRow);
                 p->setName(newPoint.name());
                 p->setLatitude(newPoint.latitude());
                 p->setLongitude(newPoint.longitude());
-            }
-            else
-            {
+            } else {
                 qWarning() << tr("Point \"%0\" not found and can not create. Text element skipped...").arg(pName);
                 return false;
             }
@@ -101,45 +126,10 @@ bool IqAmeText::loadFromString(const QString &string)
         setText(stringRx.cap(2));
     }
 
-    updateBoundingBox();
     return true;
 }
 
-void IqAmeText::updateBoundingBox()
+QString IqAmeText::text() const
 {
-    if (point())
-    {
-        QRectF pointBox (point()->toGlPoint(), QSizeF(1, 1));
-
-        setBoundingBox(pointBox);
-    }
-}
-
-void IqAmeText::paindGl(const QRectF &area, IqLayerView *layerView)
-{
-    Q_UNUSED(area);
-    QFont font;
-    font.setPointSize(6);
-    switch (outputAttributes()->textSize())
-    {
-    case IqAmeShapesAttributes::R1:
-        break;
-    case IqAmeShapesAttributes::R2:
-        font.setPointSize(font.pointSize() * 1.5);
-        break;
-    case IqAmeShapesAttributes::R3:
-        font.setPointSize(font.pointSize() * 2);
-        break;
-    case IqAmeShapesAttributes::R4:
-        font.setPointSize(font.pointSize() * 2.5);
-        break;
-    }
-
-    layerView->qglColor(outputAttributes()->toRGBColor());
-
-    if (point())
-    {
-        QPoint screenPoint = layerView->mapFromGeo(point()->toGlPoint());
-        layerView->renderText(screenPoint.x(), screenPoint.y(), text(), font);
-    }
+    return m_text;
 }

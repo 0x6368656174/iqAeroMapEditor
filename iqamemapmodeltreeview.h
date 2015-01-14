@@ -8,7 +8,7 @@ class IqAmeMapModelTreeView : public QTreeView
 {
     Q_OBJECT
 public:
-    explicit IqAmeMapModelTreeView(QWidget *parent = 0);
+    explicit IqAmeMapModelTreeView(QWidget *parent = Q_NULLPTR);
 
     void setModel(IqAmeMapModel * model);
 
@@ -20,7 +20,7 @@ private slots:
     void onActivated(const QModelIndex & index);
 
 private:
-    IqAmeMapModel *_mapModel;
+    IqAmeMapModel *m_mapModel;
 };
 
 #endif // IQAMEMAPMODELTREEVIEW_H

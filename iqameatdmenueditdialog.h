@@ -12,7 +12,7 @@ class IqAmeAtdMenuEditDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit IqAmeAtdMenuEditDialog(QWidget *parent = 0);
+    explicit IqAmeAtdMenuEditDialog(QWidget *parent = Q_NULLPTR);
     ~IqAmeAtdMenuEditDialog();
 
 private:

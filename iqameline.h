@@ -1,19 +1,26 @@
 #ifndef IQAMELINE_H
 #define IQAMELINE_H
 
-#include "iqameshapeobject.h"
+#include "iqamenamedshapeobject.h"
 #include "iqamesubline.h"
+#include <QGraphicsItemGroup>
+#include "iqamelinegraphicsitem.h"
 
-class IqAmeLine : public IqAmeShapeObject
+class IqAmeLine : public IqAmeNamedShapeObject
 {
     Q_OBJECT
 public:
-
     explicit IqAmeLine(QObject *parent = 0);
 
-    virtual void paindGl(const QRectF &area, IqLayerView *layerView);
+    ~IqAmeLine();
 
-    virtual bool loadFromString(const QString &string);
+    virtual IqAmeLineGraphicsItem *graphicsItem() Q_DECL_OVERRIDE;
+
+    virtual void updateGraphicsItem() Q_DECL_OVERRIDE;
+
+    virtual bool loadFromString(const QString &string) Q_DECL_OVERRIDE;
+
+    virtual IqAmeShapesAttributes *outputAttributes() const Q_DECL_OVERRIDE;
 
     void appendSubLine(IqAmeSubLine *subLine);
 
@@ -21,17 +28,15 @@ public:
 
     void removeSubLine(IqAmeSubLine *subLine);
 
-public:
-    inline virtual IqAmeShapesAttributes * outputAttributes() const {return _outputAttributes;}
+    QList<IqAmeSubLine *> subLines() const;
 
 private:
-    QList<IqAmeSubLine *> _subLines;
-    IqAmeShapesAttributes * _outputAttributes;
-    bool _autoUpdateBoundingBox;
-
     void setOutputAttributes(IqAmeShapesAttributes * outputAttributes);
 
-    void updateBoundingBox();
+private:
+    QList<IqAmeSubLine *> m_subLines;
+    IqAmeShapesAttributes * m_outputAttributes;
+    IqAmeLineGraphicsItem *m_graphicsItem;
 };
 
 #endif // IQAMELINE_H

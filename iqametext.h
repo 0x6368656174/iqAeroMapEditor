@@ -1,26 +1,31 @@
 #ifndef IQAMETEXT_H
 #define IQAMETEXT_H
 
-#include "iqameshapeobject.h"
+#include "iqamenamedshapeobject.h"
 #include "iqamegeopoint.h"
+#include "iqametextgraphicsitem.h"
 
-class IqAmeText : public IqAmeShapeObject
+class IqAmeText : public IqAmeNamedShapeObject
 {
     Q_OBJECT
     Q_PROPERTY(QString text READ text WRITE setText NOTIFY textChanged)
     Q_PROPERTY(IqAmeGeoPoint* point READ point WRITE setPoint NOTIFY pointChanged)
 public:
-    explicit IqAmeText(QObject *parent = 0);
+    explicit IqAmeText(QObject *parent = Q_NULLPTR);
 
-    virtual void paindGl(const QRectF &area, IqLayerView *layerView);
+    ~IqAmeText();
+
+    virtual IqAmeTextGraphicsItem *graphicsItem() Q_DECL_OVERRIDE;
+
+    virtual void updateGraphicsItem() Q_DECL_OVERRIDE;
 
     virtual bool loadFromString(const QString &string);
 
 public:
-    inline QString text() const {return _text;}
+    QString text() const;
     void setText(const QString &text);
 
-    inline IqAmeGeoPoint *point() const {return _point;}
+    IqAmeGeoPoint *point() const;
     void setPoint(IqAmeGeoPoint *point);
 
 signals:
@@ -28,10 +33,9 @@ signals:
     void pointChanged();
 
 private:
-    QString _text;
-    IqAmeGeoPoint *_point;
-
-    void updateBoundingBox();
+    QString m_text;
+    IqAmeGeoPoint *m_point;
+    IqAmeTextGraphicsItem *m_graphicsTextItem;
 };
 
 #endif // IQAMETEXT_H

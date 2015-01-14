@@ -8,16 +8,16 @@ class IqAmeGeoPointsSortFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    explicit IqAmeGeoPointsSortFilterModel(QObject *parent = 0);
+    explicit IqAmeGeoPointsSortFilterModel(QObject *parent = Q_NULLPTR);
 
     void setSourceModel(IqAmeGeoPointsModel *sourceModel);
 
 protected:
     virtual bool lessThan(const QModelIndex &left,
-                          const QModelIndex &right) const;
+                          const QModelIndex &right) const Q_DECL_OVERRIDE;
 
 private:
-    IqAmeGeoPointsModel *_geoPointsModel;
+    IqAmeGeoPointsModel *m_geoPointsModel;
 };
 
 #endif // IQAMEGEOPOINTSSORTFILTERMODEL_H

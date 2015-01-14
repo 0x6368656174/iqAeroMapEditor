@@ -10,7 +10,7 @@ class IqAmeGeoPointsTableView : public QTableView
 {
     Q_OBJECT
 public:
-    explicit IqAmeGeoPointsTableView(QWidget *parent = 0);
+    explicit IqAmeGeoPointsTableView(QWidget *parent = Q_NULLPTR);
 
     void setModel(IqAmeGeoPointsModel *model);
 
@@ -36,15 +36,15 @@ private slots:
     void enableSortModel();
 
 private:
-    QMenu *_contextMenu;
-    QAction *_findBasePointAction;
-    QAction *_addPointAction;
-    QAction *_removePointAction;
-    QAction *_pointDependingAction;
-    QModelIndex _currentIndex;
-    IqAmeGeoPointsModel *_geoPointModel;
-    IqAmeGeoPointsSortFilterModel *_sortFilterModel;
-    IqAmeGeoPointsTableDelegate *_delegate;
+    QMenu *m_contextMenu;
+    QAction *m_findBasePointAction;
+    QAction *m_addPointAction;
+    QAction *m_removePointAction;
+    QAction *m_pointDependingAction;
+    QModelIndex m_currentIndex;
+    IqAmeGeoPointsModel *m_geoPointModel;
+    IqAmeGeoPointsSortFilterModel *m_sortFilterModel;
+    IqAmeGeoPointsTableDelegate *m_delegate;
 
     bool rowAvailableToBeRemoved(const int row);
 };

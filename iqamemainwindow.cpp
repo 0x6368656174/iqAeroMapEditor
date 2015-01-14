@@ -1,14 +1,18 @@
 #include "iqamemainwindow.h"
 #include "ui_iqamemainwindow.h"
 #include "iqameapplication.h"
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent/QtConcurrentRun>
+#else
 #include <QtConcurrentRun>
+#endif
 #include <QFileDialog>
 #include <QFutureWatcher>
 
 IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::IQAMEMainWindow),
-    _logDialog(new IqAmeLogDialog(this))
+    m_logDialog(new IqAmeLogDialog(this))
 {
     ui->setupUi(this);
 
@@ -19,13 +23,13 @@ IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
     ui->pointTableWidget->setModel(IqAmeApplication::aeroMapModel()->pointsModel());
 
 #if QT_VERSION >= 0x050000
-        ui->layerTreeView->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-        ui->layerTreeView->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-        ui->layerTreeView->header()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->layerTreeView->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->layerTreeView->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    ui->layerTreeView->header()->setSectionResizeMode(2, QHeaderView::Stretch);
 #else
-        ui->layerTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
-        ui->layerTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-        ui->layerTreeView->header()->setResizeMode(2, QHeaderView::Stretch);
+    ui->layerTreeView->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+    ui->layerTreeView->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+    ui->layerTreeView->header()->setResizeMode(2, QHeaderView::Stretch);
 #endif
 
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFolder()));
@@ -42,16 +46,15 @@ IqAmeMainWindow::~IqAmeMainWindow()
 
 void IqAmeMainWindow::showLogs()
 {
-    _logDialog->open();
+    m_logDialog->open();
 }
 
 void IqAmeMainWindow::openFolder()
 {
     QString folder = QFileDialog::getExistingDirectory(this, tr("Open folder"));
-    if (!folder.isEmpty())
-    {
+    if (!folder.isEmpty()) {
         qDebug() << tr("START LOAD MAP DATA...");
-        _loadTimer.restart();
+        m_loadTimer.restart();
         QApplication::setOverrideCursor(Qt::WaitCursor);
         showLogs();
         IqAmeApplication::aeroMapModel()->startLoadData();
@@ -60,8 +63,7 @@ void IqAmeMainWindow::openFolder()
         connect(watcher, SIGNAL(finished()), this, SLOT(onLoadFinished()));
         connect(watcher, SIGNAL(finished()), watcher, SLOT(deleteLater()));
 
-        QString* nullResult = NULL;
-
+        QString* nullResult = Q_NULLPTR;
         QFuture <bool> future = QtConcurrent::run(IqAmeApplication::aeroMapModel(), &IqAmeMapModel::loadFromFolder, folder, nullResult);
         watcher->setFuture(future);
     }
@@ -72,7 +74,7 @@ void IqAmeMainWindow::onLoadFinished()
     IqAmeApplication::aeroMapModel()->endLoadData();
     QApplication::restoreOverrideCursor();
     qDebug() << tr("LOAD MAP DATA FINISHED IN %0 sec")
-                .arg(_loadTimer.elapsed()/1000);
+             .arg(m_loadTimer.elapsed()/1000);
 }
 
 void IqAmeMainWindow::showPoints()

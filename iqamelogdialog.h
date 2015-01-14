@@ -13,7 +13,7 @@ class IqAmeLogDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit IqAmeLogDialog(QWidget *parent = 0);
+    explicit IqAmeLogDialog(QWidget *parent = Q_NULLPTR);
     ~IqAmeLogDialog();
 
     static void addToDebug(const QString &text);
@@ -36,7 +36,7 @@ private slots:
 private:
     Ui::IqAmeLogDialog *ui;
 
-    static QList<IqAmeLogDialog *> _dialogs;
+    static QList<IqAmeLogDialog *> m_dialogs;
 };
 
 #endif // IQAMELOGDIALOG_H

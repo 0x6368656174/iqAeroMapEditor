@@ -19,21 +19,19 @@
 
 IqAmeMapModel::IqAmeMapModel(QObject *parent) :
     QAbstractItemModel(parent),
-    _rootLayer(new IqAmeLayer(this)),
-    _pointsModel(new IqAmeGeoPointsModel(this))
+    m_rootLayer(new IqAmeLayer(this)),
+    m_pointsModel(new IqAmeGeoPointsModel(this))
 {
 }
 
 void IqAmeMapModel::clear()
 {
     //Удалим все дочерние слои
-    if (rowCount() > 0)
-    {
+    if (rowCount() > 0) {
         emit beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
-        QList<IqAmeLayer *> childs = _rootLayer->childLayers();
-        foreach (IqAmeLayer * layer, childs)
-        {
-            _rootLayer->removeChildLayer(layer);
+        QList<IqAmeLayer *> childs = m_rootLayer->childLayers();
+        foreach (IqAmeLayer * layer, childs) {
+            m_rootLayer->removeChildLayer(layer);
         }
         emit endRemoveRows();
     }
@@ -41,13 +39,13 @@ void IqAmeMapModel::clear()
 
 void IqAmeMapModel::startLoadData()
 {
-    _pointsModel->startLoadData();
+    m_pointsModel->startLoadData();
     beginResetModel();
 }
 
 void IqAmeMapModel::endLoadData()
 {
-    _pointsModel->endLoadData();
+    m_pointsModel->endLoadData();
     endResetModel();
 }
 
@@ -56,13 +54,12 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     IqAmeLayer *newRootLayer = new IqAmeLayer();
 
     //Удалим старый слой
-    _rootLayer->deleteLater();
-    _rootLayer = new IqAmeLayer();
-    _rootLayer->moveToThread(this->thread());
-    _rootLayer->setParent(this);
+    m_rootLayer->deleteLater();
+    m_rootLayer = new IqAmeLayer();
+    m_rootLayer->moveToThread(this->thread());
+    m_rootLayer->setParent(this);
 
-    if (!QFile::exists(folderName))
-    {
+    if (!QFile::exists(folderName)) {
         if (lastError)
             *lastError = tr("Folder \"%0\" not exist.").arg(folderName);
         qWarning() << tr("Folder \"%0\" not exist.").arg(folderName);
@@ -72,8 +69,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     }
 
     //Загрузим модель с точками
-    if (!_pointsModel->loadFromFile(folderName + "/" + HABAR_W_FILE_NAME))
-    {
+    if (!m_pointsModel->loadFromFile(folderName + "/" + HABAR_W_FILE_NAME)) {
         if (lastError)
             *lastError = tr("Error on load points file\"%0\".").arg(folderName + "/" + HABAR_W_FILE_NAME);
         qWarning() << tr("Error on load points file\"%0\".").arg(folderName + "/" + HABAR_W_FILE_NAME);
@@ -82,8 +78,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
         return false;
     }
 
-    if (!QFile::exists(folderName + "/" + MAPLAB_FILE_NAME))
-    {
+    if (!QFile::exists(folderName + "/" + MAPLAB_FILE_NAME)) {
         if (lastError)
             *lastError = tr("File \"%0\" not exist.").arg(folderName + "/" + MAPLAB_FILE_NAME);
         qWarning() << tr("File \"%0\" not exist.").arg(folderName + "/" + MAPLAB_FILE_NAME);
@@ -92,8 +87,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
         return false;
     }
 
-    if (!QFile::exists(folderName + "/" + HABAR_2_FILE_NAME))
-    {
+    if (!QFile::exists(folderName + "/" + HABAR_2_FILE_NAME)) {
         if (lastError)
             *lastError = tr("File \"%0\" not exist.").arg(folderName + "/" + HABAR_2_FILE_NAME);
         qWarning() << tr("File \"%0\" not exist.").arg(folderName + "/" + HABAR_2_FILE_NAME);
@@ -103,8 +97,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     }
 
     QFile maplabFile (folderName + "/" + MAPLAB_FILE_NAME);
-    if (!maplabFile.open(QFile::ReadOnly))
-    {
+    if (!maplabFile.open(QFile::ReadOnly)) {
         if (lastError)
             *lastError = tr("Can not open \"%0\" file.").arg(folderName + "/" + MAPLAB_FILE_NAME);
         qWarning() << tr("Can not open \"%0\" file.").arg(folderName + "/" + MAPLAB_FILE_NAME);
@@ -114,8 +107,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     }
 
     QFile habar2File (folderName + "/" + HABAR_2_FILE_NAME);
-    if (!habar2File.open(QFile::ReadOnly))
-    {
+    if (!habar2File.open(QFile::ReadOnly)) {
         if (lastError)
             *lastError = tr("Can not open \"%0\" file.").arg(folderName + "/" + HABAR_2_FILE_NAME);
         qWarning() << tr("Can not open \"%0\" file.").arg(folderName + "/" + HABAR_2_FILE_NAME);
@@ -160,18 +152,15 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     parentLayer->appendChildLayer(pointsSWLayer);
 
     int habar2Index = 0;
-    foreach (QString maplabLine, maplabaStringList)
-    {
-        if (maplabLine.trimmed() == "**")
-        {
+    foreach (QString maplabLine, maplabaStringList) {
+        if (maplabLine.trimmed() == "**") {
             parentLayer = parentLayer->parentLayer();
 
             continue;
         }
 
         QRegExp menuContainerRx ("\\*(.+)\\*");
-        if (menuContainerRx.indexIn(maplabLine) > -1)
-        {
+        if (menuContainerRx.indexIn(maplabLine) > -1) {
             IqAmeLayer *newParentLayer = new IqAmeLayer(parentLayer);
             newParentLayer->setAtdMenuName(menuContainerRx.cap(1));
             parentLayer->appendChildLayer(newParentLayer);
@@ -180,8 +169,7 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
             continue;
         }
 
-        if (habar2Index >= habar2StringList.count())
-        {
+        if (habar2Index >= habar2StringList.count()) {
             clear();
 
             if (lastError)
@@ -195,12 +183,9 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
         IqAmeLayer *newSublineLayer = new IqAmeLayer(parentLayer);
         newSublineLayer->setAtdMenuName(maplabLine.trimmed());
         newSublineLayer->setFileName(habar2StringList[habar2Index].trimmed() + ".sld");
-        if (newSublineLayer->loadFromFile(folderName + "/" + newSublineLayer->fileName().toUpper(), lastError))
-        {
+        if (newSublineLayer->loadFromFile(folderName + "/" + newSublineLayer->fileName().toUpper(), lastError)) {
             parentLayer->appendChildLayer(newSublineLayer);
-        }
-        else
-        {
+        } else {
             qWarning() << tr("Error on load \"%0\". Skipped.").arg(newSublineLayer->fileName().toUpper() + ".SLD");
             newSublineLayer->deleteLater();
         }
@@ -211,10 +196,20 @@ bool IqAmeMapModel::loadFromFolder(const QString &folderName, QString *lastError
     newRootLayer->moveToThread(this->thread());
     newRootLayer->setParent(this);
     //Заменим старый слой на новый
-    _rootLayer->deleteLater();
-    _rootLayer = newRootLayer;
+    m_rootLayer->deleteLater();
+    m_rootLayer = newRootLayer;
 
     return true;
+}
+
+IqAmeGeoPointsModel *IqAmeMapModel::pointsModel() const
+{
+    return m_pointsModel;
+}
+
+IqAmeLayer *IqAmeMapModel::rootLayer() const
+{
+    return m_rootLayer;
 }
 
 QModelIndex IqAmeMapModel::index(int row, int column, const QModelIndex &parent) const
@@ -225,7 +220,7 @@ QModelIndex IqAmeMapModel::index(int row, int column, const QModelIndex &parent)
     IqAmeLayer *parentLayer;
 
     if (!parent.isValid())
-        parentLayer = _rootLayer;
+        parentLayer = m_rootLayer;
     else
         parentLayer = static_cast<IqAmeLayer*>(parent.internalPointer());
 
@@ -244,7 +239,7 @@ QModelIndex IqAmeMapModel::parent(const QModelIndex &index) const
     IqAmeLayer *childLayer = static_cast<IqAmeLayer*>(index.internalPointer());
     IqAmeLayer *parentLayer = childLayer->parentLayer();
 
-    if (parentLayer == _rootLayer)
+    if (parentLayer == m_rootLayer)
         return QModelIndex();
 
     return createIndex(parentLayer->index(), 0, parentLayer);
@@ -256,15 +251,19 @@ int IqAmeMapModel::rowCount(const QModelIndex &parent) const
     if (parent.column() > 0)
         return 0;
 
-    if (!parent.isValid())
-    {
-        parentLayer = _rootLayer;
+    if (!parent.isValid()) {
+        parentLayer = m_rootLayer;
         return parentLayer->childLayersCount() + 1;
-    }
-    else
+    } else
         parentLayer = static_cast<IqAmeLayer*>(parent.internalPointer());
 
     return parentLayer->childLayersCount();
+}
+
+int IqAmeMapModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return 3;
 }
 
 QVariant IqAmeMapModel::data(const QModelIndex &index, int role) const
@@ -276,27 +275,17 @@ QVariant IqAmeMapModel::data(const QModelIndex &index, int role) const
     int row = index.row();
     IqAmeLayer *layer = static_cast<IqAmeLayer*>(index.internalPointer());
 
-    if (!index.parent().isValid())
-    {
-        if (row < 4)
-        {
-            if (column == COLUMN_VISIBLE)
-            {
-                switch (role)
-                {
-                case Qt::CheckStateRole:
-                {
-                    if (index.row() == 0)
-                    {
+    if (!index.parent().isValid()) {
+        if (row < 4) {
+            if (column == COLUMN_VISIBLE) {
+                switch (role) {
+                case Qt::CheckStateRole: {
+                    if (index.row() == 0) {
                         return Qt::Unchecked;
-                    } else
-                    {
-                        if (layer->visible())
-                        {
+                    } else {
+                        if (layer->visible()) {
                             return Qt::Checked;
-                        }
-                        else
-                        {
+                        } else {
                             return Qt::Unchecked;
                         }
                     }
@@ -307,22 +296,16 @@ QVariant IqAmeMapModel::data(const QModelIndex &index, int role) const
             }
 
 
-            else if (column == COLUMN_ATD_NAME)
-            {
-                switch (role)
-                {
-                case Qt::DisplayRole:
-                {
-                    if (index.row() == 0)
-                    {
+            else if (column == COLUMN_ATD_NAME) {
+                switch (role) {
+                case Qt::DisplayRole: {
+                    if (index.row() == 0) {
                         return tr("GEO POINTS");
-                    } else
-                    {
+                    } else {
                         return layer->atdMenuName();
                     }
                 }
-                case Qt::FontRole:
-                {
+                case Qt::FontRole: {
                     QFont font;
                     font.setBold(true);
                     return font;
@@ -333,17 +316,12 @@ QVariant IqAmeMapModel::data(const QModelIndex &index, int role) const
             }
 
 
-            else if (column == COLUMN_FILE_NAME)
-            {
-                switch (role)
-                {
-                case Qt::DisplayRole:
-                {
-                    if (row == 0)
-                    {
+            else if (column == COLUMN_FILE_NAME) {
+                switch (role) {
+                case Qt::DisplayRole: {
+                    if (row == 0) {
                         return QVariant();
-                    } else
-                    {
+                    } else {
                         IqAmeLayer *layer = static_cast<IqAmeLayer*>(index.internalPointer());
                         return layer->fileName();
                     }
@@ -355,35 +333,23 @@ QVariant IqAmeMapModel::data(const QModelIndex &index, int role) const
         }
     }
 
-    if (column == COLUMN_VISIBLE)
-    {
-        switch (role)
-        {
-        case Qt::CheckStateRole:
-        {
-            if (layer->visible())
-            {
+    if (column == COLUMN_VISIBLE) {
+        switch (role) {
+        case Qt::CheckStateRole: {
+            if (layer->visible()) {
                 return Qt::Checked;
-            }
-            else
-            {
+            } else {
                 return Qt::Unchecked;
             }
         }
         }
-    }
-    else  if (column == COLUMN_ATD_NAME)
-    {
-        switch (role)
-        {
+    } else  if (column == COLUMN_ATD_NAME) {
+        switch (role) {
         case Qt::DisplayRole:
             return layer->atdMenuName();
         }
-    }
-    else if (column == COLUMN_FILE_NAME)
-    {
-        switch (role)
-        {
+    } else if (column == COLUMN_FILE_NAME) {
+        switch (role) {
         case Qt::DisplayRole:
             return layer->fileName();
         }
@@ -408,11 +374,9 @@ Qt::ItemFlags IqAmeMapModel::flags(const QModelIndex &index) const
 QVariant IqAmeMapModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch (orientation) {
-    case Qt::Horizontal:
-    {
+    case Qt::Horizontal: {
         switch (role) {
-        case Qt::DisplayRole:
-        {
+        case Qt::DisplayRole: {
             switch (section) {
             case COLUMN_VISIBLE:
                 return tr("V");
@@ -445,8 +409,7 @@ bool IqAmeMapModel::setData(const QModelIndex &index, const QVariant &value, int
     if (!layer)
         return false;
 
-    if (column == COLUMN_VISIBLE)
-    {
+    if (column == COLUMN_VISIBLE) {
         layer->setVisible(value == Qt::Checked);
         emit dataChanged(index, index);
 

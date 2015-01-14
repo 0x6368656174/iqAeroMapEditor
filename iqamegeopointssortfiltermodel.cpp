@@ -2,39 +2,36 @@
 
 IqAmeGeoPointsSortFilterModel::IqAmeGeoPointsSortFilterModel(QObject *parent) :
     QSortFilterProxyModel(parent),
-    _geoPointsModel(NULL)
+    m_geoPointsModel(Q_NULLPTR)
 {
 }
 
 void IqAmeGeoPointsSortFilterModel::setSourceModel(IqAmeGeoPointsModel *sourceModel)
 {
-    if (_geoPointsModel != sourceModel)
-    {
-        _geoPointsModel = sourceModel;
+    if (m_geoPointsModel != sourceModel) {
+        m_geoPointsModel = sourceModel;
 
         QSortFilterProxyModel::setSourceModel(sourceModel);
     }
 }
 
 bool IqAmeGeoPointsSortFilterModel::lessThan(const QModelIndex &left,
-                                             const QModelIndex &right) const
+        const QModelIndex &right) const
 {
-    IqAmeGeoPoint *leftPoint = _geoPointsModel->at (left.row());
-    IqAmeGeoPoint *rightPoint = _geoPointsModel->at (right.row());
+    IqAmeGeoPoint *leftPoint = m_geoPointsModel->at (left.row());
+    IqAmeGeoPoint *rightPoint = m_geoPointsModel->at (right.row());
 
     if (!leftPoint)
         return false;
     if (!rightPoint)
         return true;
 
-    switch (left.column())
-    {
+    switch (left.column()) {
     case IqAmeGeoPointsModel::NAME_COLUMN:
         return leftPoint->name() < rightPoint->name();
     case IqAmeGeoPointsModel::DEFINITION_TYPE_COLUMN:
         return leftPoint->definitionType() < rightPoint->definitionType();
-    case IqAmeGeoPointsModel::BASE_POINT_COLUMN:
-    {
+    case IqAmeGeoPointsModel::BASE_POINT_COLUMN: {
         IqAmeGeoPoint *leftBasePoint = leftPoint->basePoint();
         IqAmeGeoPoint *rightBasePoint = rightPoint->basePoint();
         if (!leftBasePoint)

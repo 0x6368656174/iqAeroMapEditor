@@ -22,7 +22,7 @@ public:
         COMMENT_COLUMN,
     };
 
-    explicit IqAmeGeoPointsModel(QObject *parent = 0);
+    explicit IqAmeGeoPointsModel(QObject *parent = Q_NULLPTR);
 
     void startLoadData();
 
@@ -30,7 +30,7 @@ public:
 
     ~IqAmeGeoPointsModel();
 
-    bool loadFromFile(const QString &fileName, QString *lastError = 0);
+    bool loadFromFile(const QString &fileName, QString *lastError = Q_NULLPTR);
 
     int row(const IqAmeGeoPoint *point) const;
 

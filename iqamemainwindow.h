@@ -18,7 +18,7 @@ class IqAmeMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit IqAmeMainWindow(QWidget *parent = 0);
+    explicit IqAmeMainWindow(QWidget *parent = Q_NULLPTR);
     ~IqAmeMainWindow();
 
 private slots:
@@ -30,8 +30,8 @@ private slots:
 
 private:
     Ui::IQAMEMainWindow *ui;
-    IqAmeLogDialog *_logDialog;
-    QTime _loadTimer;
+    IqAmeLogDialog *m_logDialog;
+    QTime m_loadTimer;
 };
 
 #endif // IQAMEMAINWINDOW_H

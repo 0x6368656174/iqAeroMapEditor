@@ -9,18 +9,17 @@
 
 IqAmeLayer::IqAmeLayer(QObject *parent) :
     QObject(parent),
-    _visible(false),
-    _shapesModel(new IqAmeShapesModel(this)),
-    _childLayers(QList<IqAmeLayer *>()),
-    _parentLayer(NULL)
+    m_shapesModel(new IqAmeShapesModel(this)),
+    m_childLayers(QList<IqAmeLayer *>()),
+    m_parentLayer(Q_NULLPTR),
+    m_graphicsItem(Q_NULLPTR)
 {
 }
 
 void IqAmeLayer::insertChildLayer(const qint32 index, IqAmeLayer *layer)
 {
-    if (layer)
-    {
-        _childLayers.insert(index, layer);
+    if (layer) {
+        m_childLayers.insert(index, layer);
         layer->setParent(this);
         layer->setParentLayer(this);
 
@@ -30,9 +29,8 @@ void IqAmeLayer::insertChildLayer(const qint32 index, IqAmeLayer *layer)
 
 void IqAmeLayer::appendChildLayer(IqAmeLayer *layer)
 {
-    if (layer)
-    {
-        _childLayers.append(layer);
+    if (layer) {
+        m_childLayers.append(layer);
         layer->setParent(this);
         layer->setParentLayer(this);
 
@@ -42,9 +40,8 @@ void IqAmeLayer::appendChildLayer(IqAmeLayer *layer)
 
 void IqAmeLayer::removeChildLayer(IqAmeLayer *layer)
 {
-    if (layer)
-    {
-        if (_childLayers.removeAll(layer) > 0)
+    if (layer) {
+        if (m_childLayers.removeAll(layer) > 0)
             emit childLayersCountChanged();
         layer->deleteLater();
     }
@@ -52,18 +49,22 @@ void IqAmeLayer::removeChildLayer(IqAmeLayer *layer)
 
 IqAmeLayer * IqAmeLayer::childLayer(const qint32 index) const
 {
-    if (index > -1 && index < childLayersCount())
-    {
-        return _childLayers[index];
+    if (index > -1 && index < childLayersCount()) {
+        return m_childLayers[index];
     }
 
     return NULL;
 }
 
+QList<IqAmeLayer *> IqAmeLayer::childLayers() const
+{
+    return m_childLayers;
+}
+
 qint32 IqAmeLayer::index() const
 {
-    if (_parentLayer)
-        return _parentLayer->_childLayers.indexOf(const_cast<IqAmeLayer*>(this));
+    if (m_parentLayer)
+        return m_parentLayer->m_childLayers.indexOf(const_cast<IqAmeLayer*>(this));
 
     return 0;
 }
@@ -71,9 +72,8 @@ qint32 IqAmeLayer::index() const
 
 void IqAmeLayer::setParentLayer(IqAmeLayer *layer)
 {
-    if (_parentLayer != layer)
-    {
-        _parentLayer = layer;
+    if (m_parentLayer != layer) {
+        m_parentLayer = layer;
 
         emit parentLayerChanged();
     }
@@ -81,50 +81,74 @@ void IqAmeLayer::setParentLayer(IqAmeLayer *layer)
 
 void IqAmeLayer::setAtdMenuName(const QString &atdMenuName)
 {
-    if (_atdMenuName != atdMenuName)
-    {
-        _atdMenuName = atdMenuName;
+    if (m_atdMenuName != atdMenuName) {
+        m_atdMenuName = atdMenuName;
 
         emit atdMenuNameChanged();
     }
 }
 
+QString IqAmeLayer::fileName() const
+{
+    return m_fileName;
+}
+
 void IqAmeLayer::setFileName(const QString &fileName)
 {
-    if (_fileName != fileName)
-    {
-        _fileName = fileName;
+    if (m_fileName != fileName) {
+        m_fileName = fileName;
 
         emit fileNameChanged();
     }
 }
 
+QString IqAmeLayer::description() const
+{
+    return m_description;
+}
+
 void IqAmeLayer::setDescription(const QString &description)
 {
-    if (_description != description)
-    {
-        _description = description;
+    if (m_description != description) {
+        m_description = description;
 
         emit descriptionChanged();
     }
 }
 
+qint32 IqAmeLayer::childLayersCount() const
+{
+    return m_childLayers.count();
+}
+
+IqAmeLayer *IqAmeLayer::parentLayer() const
+{
+    return m_parentLayer;
+}
+
+QString IqAmeLayer::videomapName() const
+{
+    return m_videomapName;
+}
+
 void IqAmeLayer::setVideomapName(const QString &videomapName)
 {
-    if (_videomapName != videomapName)
-    {
-        _videomapName = videomapName;
+    if (m_videomapName != videomapName) {
+        m_videomapName = videomapName;
 
         emit videomapNameChanged();
     }
 }
 
+bool IqAmeLayer::visible()
+{
+    return graphicsItem()->isVisible();
+}
+
 void IqAmeLayer::setVisible(const bool visible)
 {
-    if (_visible != visible)
-    {
-        _visible = visible;
-
+    if (graphicsItem()->isVisible() != visible) {
+        graphicsItem()->setVisible(visible);
         emit visibleChanged();
     }
 }
@@ -141,8 +165,7 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
     if (fileName.isEmpty())
         return false;
 
-    if (!QFile::exists(fileName))
-    {
+    if (!QFile::exists(fileName)) {
         QString error = tr("File \"%0\" not exist.").arg(fileName);
         qWarning() << error;
         if (lastError)
@@ -154,8 +177,7 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
     qDebug() << tr("Starting parsing \"%0\"...").arg(fileName);
 
     QFile file (fileName);
-    if (!file.open(QFile::ReadOnly))
-    {
+    if (!file.open(QFile::ReadOnly)) {
         QString error = tr("Can not open \"%0\" file.").arg(fileName);
         qWarning() << error;
         if (lastError)
@@ -170,13 +192,10 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
 
     QRegExp nameRx ("^\\s*(N|NAME):\\s*\\\"(.*)\\\"\\s*\\*\\s*(.*)");
 
-    if (nameRx.indexIn(fileString) != -1)
-    {
+    if (nameRx.indexIn(fileString) != -1) {
         setVideomapName(nameRx.cap(2));
         setDescription(nameRx.cap(3));
-    }
-    else
-    {
+    } else {
         QString error = tr("Not found layer name in file \"%0\".").arg(fileName);
         qWarning() << error;
         if (lastError)
@@ -185,40 +204,53 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
         return false;
     }
 
-    return _shapesModel->loadFromFile(fileName, lastError);
+    return m_shapesModel->loadFromFile(fileName, lastError);
 }
 
-void IqAmeLayer::paindGl(const QRectF &area, IqLayerView *layerView)
+IqAmeLayerGraphicsItem *IqAmeLayer::graphicsItem()
 {
-    //В каждом слое, для каждого приметива вызовем функцию рисования
-    if (!shapesModel())
-        return;
-    for (int i = 0; i < shapesModel()->rowCount(); i++)
-    {
-        QModelIndex shapeIndex = shapesModel()->index(i, 0);
-        IqAmeShapeObject * shape = qvariant_cast<IqAmeShapeObject *>(shapesModel()->data(shapeIndex, IqAmeShapesModel::ShapeObject));
+    if (!m_graphicsItem) {
+        m_graphicsItem = new IqAmeLayerGraphicsItem();
+        m_graphicsItem->setLayer(this);
 
-        if (shape)
-        {
-            //Если приметив входит в область
-            QRectF boundingBox = shape->boundingBox();
-            if (area.intersects(boundingBox))
-                shape->paindGl(area, layerView);
+        foreach (IqAmeShapeObject *shape, shapesModel()->toList()) {
+            Q_CHECK_PTR(shape);
+            m_graphicsItem->addToGroup(shape->graphicsItem());
         }
+
+        m_graphicsItem->setVisible(false);
+        IqAmeApplication::graphicsScene()->addItem(m_graphicsItem);
     }
+
+    return m_graphicsItem;
+}
+
+void IqAmeLayer::updateGraphicsItem()
+{
+    foreach (IqAmeShapeObject *shape, shapesModel()->toList()) {
+        shape->updateGraphicsItem();
+    }
+}
+
+QString IqAmeLayer::atdMenuName() const
+{
+    return m_atdMenuName;
 }
 
 QList<IqAmeLayer *> IqAmeLayer::allChildLayers() const
 {
     QList<IqAmeLayer *> result;
-    foreach (IqAmeLayer* layer, _childLayers)
-    {
-        if (layer)
-        {
+    foreach (IqAmeLayer* layer, m_childLayers) {
+        if (layer) {
             result << layer;
             result << layer->allChildLayers();
         }
     }
 
     return result;
+}
+
+IqAmeShapesModel *IqAmeLayer::shapesModel() const
+{
+    return m_shapesModel;
 }

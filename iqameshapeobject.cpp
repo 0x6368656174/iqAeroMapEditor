@@ -2,8 +2,9 @@
 
 IqAmeShapeObject::IqAmeShapeObject(QObject *parent) :
     QObject(parent),
-    _inputAttributes(NULL),
-    _attributes(NULL)
+    m_inputAttributes(Q_NULLPTR),
+    m_attributes(Q_NULLPTR),
+    m_graphicsItem(Q_NULLPTR)
 {
 }
 
@@ -11,65 +12,42 @@ IqAmeShapeObject::~IqAmeShapeObject()
 {
 }
 
-void IqAmeShapeObject::setName(const QString &name)
+IqAmeShapesAttributes *IqAmeShapeObject::inputAttributes() const
 {
-    if (_name != name)
-    {
-        _name = name;
-
-        emit nameChanged();
-    }
-}
-
-void IqAmeShapeObject::setComment(const QString &comment)
-{
-    if (_comment != comment)
-    {
-        _comment = comment;
-
-        emit commentChanged();
-    }
+    return m_inputAttributes;
 }
 
 void IqAmeShapeObject::setInputAttributes(IqAmeShapesAttributes *attributes)
 {
-    if (_inputAttributes != attributes)
-    {
-        _inputAttributes = attributes;
+    if (m_inputAttributes != attributes) {
+        m_inputAttributes = attributes;
 
-        if (!_attributes)
+        if (!m_attributes)
             emit outputAttributesChanged();
 
         emit inputAttributesChanged();
     }
 }
 
+IqAmeShapesAttributes *IqAmeShapeObject::attributes() const
+{
+    return m_attributes;
+}
+
 IqAmeShapesAttributes * IqAmeShapeObject::outputAttributes() const
 {
-    if (_attributes)
-    {
-        return _attributes;
+    if (m_attributes) {
+        return m_attributes;
     }
-    return _inputAttributes;
+    return m_inputAttributes;
 }
 
 void IqAmeShapeObject::setAttributes(IqAmeShapesAttributes *attributes)
 {
-    if (_attributes != attributes)
-    {
-        _attributes = attributes;
+    if (m_attributes != attributes) {
+        m_attributes = attributes;
 
         emit attributesChanged();
         emit outputAttributesChanged();
-    }
-}
-
-void IqAmeShapeObject::setBoundingBox(const QRectF &boundingBox)
-{
-    if (_boundingBox != boundingBox)
-    {
-        _boundingBox = boundingBox;
-
-        emit boundingBoxChanged();
     }
 }

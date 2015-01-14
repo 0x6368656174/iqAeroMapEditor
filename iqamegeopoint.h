@@ -7,11 +7,8 @@
 
 class IqAmeGeoPoint : public QObject
 {
+    Q_OBJECT
 public:
-    explicit IqAmeGeoPoint(QObject *parent = 0);
-
-    ~IqAmeGeoPoint();
-
     enum DefinitionType
     {
         Geo,
@@ -19,63 +16,71 @@ public:
         Polar
     };
 
+    explicit IqAmeGeoPoint(QObject *parent = Q_NULLPTR);
+
+    ~IqAmeGeoPoint();
+
     bool fromString(const QString &string);
 
     bool fromCoordinate(const QString &coordinate);
 
 public:
-    inline QString name() const {return _name;}
-    inline void setName(const QString &name) {_name = name;}
+    QString name() const;
+    void setName(const QString &name);
 
-    inline DefinitionType definitionType() const {return _definitionType;}
-    inline void setDefinitionType(const DefinitionType definitionType) {_definitionType = definitionType; updateGlPointCache();}
+    DefinitionType definitionType() const;
+    void setDefinitionType(DefinitionType definitionType);
 
-    inline qreal latitude() const {return _latitude;}
-    inline void setLatitude(const qreal latitude) {_latitude = latitude; updateGlPointCache();}
+    qreal latitude() const;
+    void setLatitude(qreal latitude);
 
-    inline qreal longitude() const {return _longitude;}
-    inline void setLongitude(const qreal longitude) {_longitude = longitude; updateGlPointCache();}
+    qreal longitude() const;
+    void setLongitude(qreal longitude);
 
-    inline qreal x() const {return _x;}
-    inline void setX(const qreal x) {_x = x; updateGlPointCache();}
+    qreal x() const;
+    void setX(qreal x);
 
-    inline qreal y() const {return _y;}
-    inline void setY(const qreal y) {_y = y; updateGlPointCache();}
+    qreal y() const;
+    void setY(qreal y);
 
-    inline qreal angle() const {return _angle;}
-    inline void setAngle(const qreal angle) {_angle = angle; updateGlPointCache();}
+    qreal angle() const;
+    void setAngle(qreal angle);
 
-    inline qreal distance() const {return _distance;}
-    inline void setDistance(const qreal distance) {_distance = distance; updateGlPointCache();}
+    qreal distance() const;
+    void setDistance(qreal distance);
 
-    inline IqAmeGeoPoint * basePoint() const {return _basePoint;}
+    IqAmeGeoPoint *basePoint() const;
     void setBasePoint(IqAmeGeoPoint *basePoint);
 
     QString basePointName() const;
 
-    inline QString comment() const {return _comment;}
-    inline void setComment(const QString &comment) {_comment = comment;}
+    QString comment() const;
+    void setComment(const QString &comment);
 
-    inline QList<IqAmeGeoPoint *> relativePoints() const {return _relativePoints;}
+    QList<IqAmeGeoPoint *> relativePoints() const;
 
-    inline QPointF toGlPoint() const {return _glPointCache;}
+    QPointF toGlPoint() const;
+
+signals:
+    void glPointChanged();
 
 private:
-    QString _name;
-    DefinitionType _definitionType;
-    qreal _latitude;
-    qreal _longitude;
-    qreal _x;
-    qreal _y;
-    qreal _angle;
-    qreal _distance;
-    QPointer<IqAmeGeoPoint> _basePoint;
-    QString _basePointName;
-    QString _comment;
-    QList<IqAmeGeoPoint *> _relativePoints;
-    QPointF _glPointCache;
-
     void updateGlPointCache();
+
+private:
+    QString m_name;
+    DefinitionType m_definitionType;
+    qreal m_latitude;
+    qreal m_longitude;
+    qreal m_x;
+    qreal m_y;
+    qreal m_angle;
+    qreal m_distance;
+    QPointer<IqAmeGeoPoint> m_basePoint;
+    QString m_basePointName;
+    QString m_comment;
+    QList<IqAmeGeoPoint *> m_relativePoints;
+    QPointF m_glPointCache;
 };
 
 #endif // IQAMEGEOPOINT_H

@@ -8,7 +8,7 @@ class IqAmeGeoPointsTableDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit IqAmeGeoPointsTableDelegate(QObject *parent = 0);
+    explicit IqAmeGeoPointsTableDelegate(QObject *parent = Q_NULLPTR);
 
     void setSourceGeoPointsModel(IqAmeGeoPointsModel *model);
 
@@ -18,7 +18,7 @@ public:
     virtual void setModelData (QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
 private:
-    IqAmeGeoPointsModel *_sourceGeoPointsModel;
+    IqAmeGeoPointsModel *m_sourceGeoPointsModel;
 };
 
 #endif // IQAMEGEOPOINTSTABLEDELEGATE_H

@@ -2,37 +2,29 @@
 
 IqAmeMapModelTreeView::IqAmeMapModelTreeView(QWidget *parent) :
     QTreeView(parent),
-    _mapModel(NULL)
+    m_mapModel(Q_NULLPTR)
 {
     connect(this, SIGNAL(activated(QModelIndex)), this, SLOT(onActivated(QModelIndex)));
 }
 
 void IqAmeMapModelTreeView::setModel(IqAmeMapModel *model)
 {
-    if (_mapModel != model)
-    {
+    if (m_mapModel != model) {
         QTreeView::setModel(model);
-        _mapModel = model;
+        m_mapModel = model;
     }
 }
 
 void IqAmeMapModelTreeView::onActivated(const QModelIndex &index)
 {
-    if (_mapModel)
-    {
-        if (!index.parent().isValid())
-        {
-            if (index.row() == 0)
-            {
+    if (m_mapModel) {
+        if (!index.parent().isValid()) {
+            if (index.row() == 0) {
                 emit pointsClicked();
-            }
-            else
-            {
+            } else {
                 emit layerClicked(static_cast<IqAmeLayer*>(index.internalPointer()));
             }
-        }
-        else
-        {
+        } else {
             emit layerClicked(static_cast<IqAmeLayer*>(index.internalPointer()));
         }
     }

@@ -19,12 +19,9 @@ IqAmeGeoPointsModel::~IqAmeGeoPointsModel()
 
 QVariant IqAmeGeoPointsModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role == Qt::DisplayRole)
-    {
-        if (orientation == Qt::Horizontal)
-        {
-            switch (section)
-            {
+    if (role == Qt::DisplayRole) {
+        if (orientation == Qt::Horizontal) {
+            switch (section) {
             case NAME_COLUMN:
                 return tr("Name");
                 break;
@@ -74,17 +71,14 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
     if (!point)
         return QVariant();
 
-    switch (role)
-    {
+    switch (role) {
     case Qt::DisplayRole:
-        switch (index.column())
-        {
+        switch (index.column()) {
         case NAME_COLUMN:
             return point->name();
             break;
         case DEFINITION_TYPE_COLUMN:
-            switch (point->definitionType())
-            {
+            switch (point->definitionType()) {
             case IqAmeGeoPoint::Geo:
                 return tr("Geo");
                 break;
@@ -97,68 +91,53 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
             }
             break;
         case BASE_POINT_COLUMN:
-            if (point->definitionType() != IqAmeGeoPoint::Geo)
-            {
-                if (point->basePoint())
-                {
+            if (point->definitionType() != IqAmeGeoPoint::Geo) {
+                if (point->basePoint()) {
                     return point->basePoint()->name();
-                } else if (!point->basePointName().isEmpty())
-                {
+                } else if (!point->basePointName().isEmpty()) {
                     return point->basePointName();
                 }
             }
             break;
         case LATITUDE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return IqAmeGeoHelper::latitudeToString(point->latitude(), true);
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case LONGITUDE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return IqAmeGeoHelper::longitudeToString(point->longitude(), true);
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case X_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
                 return point->x();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case Y_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
                 return point->y();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case ANGLE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Polar)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Polar) {
                 return point->angle();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case DISTANCE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Polar)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Polar) {
                 return point->distance();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
@@ -169,14 +148,12 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
         break;
 
     case Qt::EditRole:
-        switch (index.column())
-        {
+        switch (index.column()) {
         case NAME_COLUMN:
             return point->name();
             break;
         case DEFINITION_TYPE_COLUMN:
-            switch (point->definitionType())
-            {
+            switch (point->definitionType()) {
             case IqAmeGeoPoint::Geo:
                 return tr("Geo");
                 break;
@@ -189,68 +166,53 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
             }
             break;
         case BASE_POINT_COLUMN:
-            if (point->definitionType() != IqAmeGeoPoint::Geo)
-            {
-                if (point->basePoint())
-                {
+            if (point->definitionType() != IqAmeGeoPoint::Geo) {
+                if (point->basePoint()) {
                     return point->basePoint()->name();
-                } else if (!point->basePointName().isEmpty())
-                {
+                } else if (!point->basePointName().isEmpty()) {
                     return point->basePointName();
                 }
             }
             break;
         case LATITUDE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return IqAmeGeoHelper::latitudeToString(point->latitude(), false);
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case LONGITUDE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return IqAmeGeoHelper::longitudeToString(point->longitude(), false);
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case X_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
                 return point->x();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case Y_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
                 return point->y();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case ANGLE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Polar)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Polar) {
                 return point->angle();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
         case DISTANCE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Polar)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Polar) {
                 return point->distance();
-            } else
-            {
+            } else {
                 return QVariant();
             }
             break;
@@ -261,8 +223,7 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
         break;
 
     case Qt::BackgroundRole:
-        switch (index.column())
-        {
+        switch (index.column()) {
         case NAME_COLUMN:
             return QBrush(QColor("#F5F5F5"));
             break;
@@ -270,70 +231,53 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
             return QBrush(QColor("#F5F5F5"));
             break;
         case BASE_POINT_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return QBrush(QColor("#DEDEDE"));
-            }
-            else if (!point->basePoint() && !point->basePointName().isEmpty())
-            {
+            } else if (!point->basePoint() && !point->basePointName().isEmpty()) {
                 return QBrush(QColor("red"));
-            }
-            else
-            {
+            } else {
                 return QBrush(QColor("#F5F5F5"));
             }
             break;
         case LATITUDE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return QBrush(QColor("#F5F5F5"));
-            } else
-            {
+            } else {
                 return QBrush(QColor("#DEDEDE"));
             }
             break;
         case LONGITUDE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Geo)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Geo) {
                 return QBrush(QColor("#F5F5F5"));
-            } else
-            {
+            } else {
                 return QBrush(QColor("#DEDEDE"));
             }
             break;
         case X_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
                 return QBrush(QColor("#F5F5F5"));
-            } else
-            {
+            } else {
                 return QBrush(QColor("#DEDEDE"));
             }
             break;
         case Y_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
                 return QBrush(QColor("#F5F5F5"));
-            } else
-            {
+            } else {
                 return QBrush(QColor("#DEDEDE"));
             }
             break;
         case ANGLE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Polar)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Polar) {
                 return QBrush(QColor("#F5F5F5"));
-            } else
-            {
+            } else {
                 return QBrush(QColor("#DEDEDE"));
             }
             break;
         case DISTANCE_COLUMN:
-            if (point->definitionType() == IqAmeGeoPoint::Polar)
-            {
+            if (point->definitionType() == IqAmeGeoPoint::Polar) {
                 return QBrush(QColor("#F5F5F5"));
-            } else
-            {
+            } else {
                 return QBrush(QColor("#DEDEDE"));
             }
             break;
@@ -344,8 +288,7 @@ QVariant IqAmeGeoPointsModel::data(const QModelIndex &index, int role) const
         break;
 
     case Qt::ToolTipRole:
-        switch (index.column())
-        {
+        switch (index.column()) {
         case BASE_POINT_COLUMN:
             if (!point->basePoint() && !point->basePointName().isEmpty())
                 return tr("Point \"%0\" does not exist.").arg(point->basePointName());
@@ -377,8 +320,7 @@ bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastErr
     _pointsIndexCaseInsensitive.clear();
 
     QFile pointsFile (fileName);
-    if (!pointsFile.open(QFile::ReadOnly))
-    {
+    if (!pointsFile.open(QFile::ReadOnly)) {
         if (lastError)
             *lastError = tr("Can not open \"%0\" file.").arg(fileName);
         qWarning() << tr("Can not open \"%0\" file.").arg(fileName);
@@ -397,8 +339,7 @@ bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastErr
     fileStringList.removeFirst();
 
     //Распарсим точки
-    foreach (QString pointString, fileStringList)
-    {
+    foreach (QString pointString, fileStringList) {
         if (pointString.trimmed().isEmpty())
             continue;
 
@@ -406,31 +347,24 @@ bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastErr
             continue;
 
         IqAmeGeoPoint *point = new IqAmeGeoPoint();
-        if (point->fromString(pointString.trimmed()))
-        {
+        if (point->fromString(pointString.trimmed())) {
             //Проверим, чтоб для данного имени точки уже не была точка
-            if (!_pointsIndexCaseInsensitive.contains(point->name().toLower()))
-            {
+            if (!_pointsIndexCaseInsensitive.contains(point->name().toLower())) {
                 _points.append(point);
                 _pointsIndex[point->name()] = point;
                 _pointsIndexCaseInsensitive[point->name().toLower()] = point;
-            }
-            else
-            {
+            } else {
                 qWarning() << tr("Found dublicat of poin from string \"%0\". Skipped.").arg(pointString.trimmed());
                 delete point;
             }
-        }
-        else
-        {
+        } else {
             qWarning() << tr("Error on create point from string \"%0\"").arg(pointString.trimmed());
             delete point;
         }
     }
 
     //Пройдемся по всем точкам и назначим им базовые точки
-    foreach (IqAmeGeoPoint *childPoint, _points)
-    {
+    foreach (IqAmeGeoPoint *childPoint, _points) {
         if (childPoint->basePointName().isEmpty())
             continue;
 
@@ -443,12 +377,9 @@ bool IqAmeGeoPointsModel::loadFromFile(const QString &fileName, QString *lastErr
 
 IqAmeGeoPoint* IqAmeGeoPointsModel::point(const QString &name, Qt::CaseSensitivity caseSensitivity) const
 {
-    if (caseSensitivity)
-    {
+    if (caseSensitivity) {
         return _pointsIndex[name.trimmed()];
-    }
-    else
-    {
+    } else {
         return _pointsIndexCaseInsensitive[name.trimmed().toLower()];
     }
 }
@@ -467,8 +398,7 @@ Qt::ItemFlags IqAmeGeoPointsModel::flags(const QModelIndex &index) const
         return QAbstractTableModel::flags(index);
 
 
-    switch (index.column())
-    {
+    switch (index.column()) {
     case NAME_COLUMN:
         return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
         break;
@@ -476,65 +406,51 @@ Qt::ItemFlags IqAmeGeoPointsModel::flags(const QModelIndex &index) const
         return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
         break;
     case BASE_POINT_COLUMN:
-        if (point->definitionType() != IqAmeGeoPoint::Geo)
-        {
+        if (point->definitionType() != IqAmeGeoPoint::Geo) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
     case LATITUDE_COLUMN:
-        if (point->definitionType() == IqAmeGeoPoint::Geo)
-        {
+        if (point->definitionType() == IqAmeGeoPoint::Geo) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
     case LONGITUDE_COLUMN:
-        if (point->definitionType() == IqAmeGeoPoint::Geo)
-        {
+        if (point->definitionType() == IqAmeGeoPoint::Geo) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
     case X_COLUMN:
-        if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-        {
+        if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
     case Y_COLUMN:
-        if (point->definitionType() == IqAmeGeoPoint::Cartesian)
-        {
+        if (point->definitionType() == IqAmeGeoPoint::Cartesian) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
     case ANGLE_COLUMN:
-        if (point->definitionType() == IqAmeGeoPoint::Polar)
-        {
+        if (point->definitionType() == IqAmeGeoPoint::Polar) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
     case DISTANCE_COLUMN:
-        if (point->definitionType() == IqAmeGeoPoint::Polar)
-        {
+        if (point->definitionType() == IqAmeGeoPoint::Polar) {
             return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        } else
-        {
+        } else {
             return Qt::NoItemFlags;
         }
         break;
@@ -571,21 +487,15 @@ bool IqAmeGeoPointsModel::setData(const QModelIndex &index, const QVariant &valu
 
     bool result = false;
 
-    switch (index.column())
-    {
-    case NAME_COLUMN:
-    {
-        if (point->name() != value.toString())
-        {
+    switch (index.column()) {
+    case NAME_COLUMN: {
+        if (point->name() != value.toString()) {
             //Найдем точку данным названием
-            if (this->point(value.toString(), Qt::CaseInsensitive))
-            {
+            if (this->point(value.toString(), Qt::CaseInsensitive)) {
                 QMessageBox::warning(NULL, tr("Name setting failed."), tr("Point with name \"%0\" already exist.")
                                      .arg(value.toString()));
                 result = false;
-            }
-            else
-            {
+            } else {
                 //Удалим из индекса старую точку
                 _pointsIndex.remove(value.toString());
                 _pointsIndexCaseInsensitive.remove(value.toString().toLower());
@@ -596,9 +506,7 @@ bool IqAmeGeoPointsModel::setData(const QModelIndex &index, const QVariant &valu
                 point->setName(value.toString());
                 result = true;
             }
-        }
-        else
-        {
+        } else {
             result = true;
         }
         break;
@@ -612,33 +520,27 @@ bool IqAmeGeoPointsModel::setData(const QModelIndex &index, const QVariant &valu
     case LATITUDE_COLUMN:
         qreal latitude;
         result = IqAmeGeoHelper::latitudeFromString(value.toString(), latitude);
-        if (result)
-        {
+        if (result) {
             point->setLatitude(latitude);
-        }
-        else
-        {
+        } else {
             QMessageBox::warning(NULL, tr("Latitude setting failed."), tr("Latitude must be in format [NS]ddmmssnn, where: \n"
-                                                                          "\tdd - degrees, \n"
-                                                                          "\tmm-minute, \n"
-                                                                          "\tss - seconds \n"
-                                                                          "\tnn - millisecond."));
+                                 "\tdd - degrees, \n"
+                                 "\tmm-minute, \n"
+                                 "\tss - seconds \n"
+                                 "\tnn - millisecond."));
         }
         break;
     case LONGITUDE_COLUMN:
         qreal longitude;
         result = IqAmeGeoHelper::longitudeFromString(value.toString(), longitude);
-        if (result)
-        {
+        if (result) {
             point->setLongitude(longitude);
-        }
-        else
-        {
+        } else {
             QMessageBox::warning(NULL, tr("Longitude setting failed."), tr("Longitude must be in format [NS]dddmmssnn, where: \n"
-                                                                           "\tddd - degrees, \n"
-                                                                           "\tmm-minute, \n"
-                                                                           "\tss - seconds \n"
-                                                                           "\tnn - millisecond."));
+                                 "\tddd - degrees, \n"
+                                 "\tmm-minute, \n"
+                                 "\tss - seconds \n"
+                                 "\tnn - millisecond."));
         }
         break;
     case X_COLUMN:
@@ -671,8 +573,7 @@ bool IqAmeGeoPointsModel::setData(const QModelIndex &index, const QVariant &valu
 
 int IqAmeGeoPointsModel::row(const IqAmeGeoPoint *point) const
 {
-    if (point)
-    {
+    if (point) {
         return _points.indexOf(const_cast<IqAmeGeoPoint *>(point));
     }
 
@@ -689,8 +590,7 @@ bool IqAmeGeoPointsModel::insertRows(int row, int count, const QModelIndex &pare
         correctRow = rowCount();
 
     emit beginInsertRows(parent, correctRow, correctRow + count - 1);
-    for(int i = 0; i < count; i++)
-    {
+    for(int i = 0; i < count; i++) {
         IqAmeGeoPoint *newPoint = new IqAmeGeoPoint();
 
         _points.insert(row, newPoint);
@@ -708,15 +608,13 @@ bool IqAmeGeoPointsModel::removeRows(int row, int count, const QModelIndex &pare
     if (row + count > rowCount())
         return false;
 
-    for (int i = row + count - 1; i >= row; i--)
-    {
+    for (int i = row + count - 1; i >= row; i--) {
         if (_points.at(i)->relativePoints().count() != 0)
             return false;
     }
 
     emit beginRemoveRows(parent, row, row + count - 1);
-    for (int i = row + count - 1; i >= row; i--)
-    {
+    for (int i = row + count - 1; i >= row; i--) {
         delete _points.at(i);
         _points.removeAt(i);
     }

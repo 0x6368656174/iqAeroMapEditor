@@ -2,7 +2,7 @@
 #include <QDateTime>
 #include "ui_iqamelogdialog.h"
 
-QList<IqAmeLogDialog *> IqAmeLogDialog::_dialogs = QList<IqAmeLogDialog *>();
+QList<IqAmeLogDialog *> IqAmeLogDialog::m_dialogs = QList<IqAmeLogDialog *>();
 
 IqAmeLogDialog::IqAmeLogDialog(QWidget *parent) :
     QDialog(parent),
@@ -11,12 +11,12 @@ IqAmeLogDialog::IqAmeLogDialog(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(tryClose()));
 
-    _dialogs << this;
+    m_dialogs << this;
 }
 
 IqAmeLogDialog::~IqAmeLogDialog()
 {
-    _dialogs.removeOne(this);
+    m_dialogs.removeOne(this);
     delete ui;
 }
 
@@ -30,8 +30,8 @@ void IqAmeLogDialog::add(const QString &text)
     QLocale locale  (QLocale::English);
     QString date = locale.toString(QDateTime::currentDateTime(), "MMM dd hh:mm:ss");
     QString textToAdd = QString("%0: %1")
-            .arg(date)
-            .arg(text);
+                        .arg(date)
+                        .arg(text);
 
     ui->textBrowser->append(textToAdd);
 }
@@ -39,35 +39,34 @@ void IqAmeLogDialog::add(const QString &text)
 void IqAmeLogDialog::addToDebug(const QString &text)
 {
     QString textToAdd = QString("DEBUG: %0")
-            .arg(text.trimmed());
+                        .arg(text.trimmed());
     addToAllLogs(textToAdd);
 }
 
 void IqAmeLogDialog::addToWarning(const QString &text)
 {
     QString textToAdd = QString("WARNING: %0")
-            .arg(text.trimmed());
+                        .arg(text.trimmed());
     addToAllLogs(textToAdd);
 }
 
 void IqAmeLogDialog::addToCritical(const QString &text)
 {
     QString textToAdd = QString("CRITICAL: %0")
-            .arg(text.trimmed());
+                        .arg(text.trimmed());
     addToAllLogs(textToAdd);
 }
 
 void IqAmeLogDialog::addToFatal(const QString &text)
 {
     QString textToAdd = QString("FATAL: %0")
-            .arg(text.trimmed());
+                        .arg(text.trimmed());
     addToAllLogs(textToAdd);
 }
 
 void IqAmeLogDialog::addToAllLogs(const QString &text)
 {
-    foreach (IqAmeLogDialog *dialog, _dialogs)
-    {
+    foreach (IqAmeLogDialog *dialog, m_dialogs) {
         QMetaObject::invokeMethod(dialog,
                                   "add",
                                   Qt::QueuedConnection,

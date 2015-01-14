@@ -2,7 +2,7 @@
 #define IQAMESHAPESMODEL_H
 
 #include <QAbstractTableModel>
-#include "iqameshapeobject.h"
+#include "iqamenamedshapeobject.h"
 #include "iqameshapesattributes.h"
 
 
@@ -21,23 +21,26 @@ public:
         ShapeObject = Qt::UserRole
     };
 
-    explicit IqAmeShapesModel(QObject *parent = 0);
+    explicit IqAmeShapesModel(QObject *parent = Q_NULLPTR);
 
-    bool loadFromFile(const QString &fileName, QString *lastError = 0);
+    QList<IqAmeNamedShapeObject *> toList() const;
+
+    bool loadFromFile(const QString &fileName, QString *lastError = Q_NULLPTR);
 
 public:
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
-    int columnCount(const QModelIndex &parent = QModelIndex()) const {Q_UNUSED(parent); return 2;}
+    virtual QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const {Q_UNUSED(parent); return _shapes.count();}
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
+
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
 private:
-    QList<IqAmeShapeObject *> _shapes;
+    QList<IqAmeNamedShapeObject *> m_shapes;
 
-    IqAmeShapesAttributes *_baseAttributes;
+    IqAmeShapesAttributes *m_baseAttributes;
 
     void clear();
 };

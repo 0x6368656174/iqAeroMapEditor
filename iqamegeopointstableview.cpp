@@ -8,38 +8,38 @@
 
 IqAmeGeoPointsTableView::IqAmeGeoPointsTableView(QWidget *parent) :
     QTableView(parent),
-    _contextMenu(new QMenu(this)),
-    _findBasePointAction(new QAction(this)),
-    _addPointAction(new QAction(this)),
-    _removePointAction(new QAction(this)),
-    _pointDependingAction(new QAction(this)),
-    _geoPointModel(NULL),
-    _sortFilterModel(new IqAmeGeoPointsSortFilterModel(this)),
-    _delegate(new IqAmeGeoPointsTableDelegate(this))
+    m_contextMenu(new QMenu(this)),
+    m_findBasePointAction(new QAction(this)),
+    m_addPointAction(new QAction(this)),
+    m_removePointAction(new QAction(this)),
+    m_pointDependingAction(new QAction(this)),
+    m_geoPointModel(Q_NULLPTR),
+    m_sortFilterModel(new IqAmeGeoPointsSortFilterModel(this)),
+    m_delegate(new IqAmeGeoPointsTableDelegate(this))
 {
-    setItemDelegate(_delegate);
+    setItemDelegate(m_delegate);
 
-    QTableView::setModel(_sortFilterModel);
+    QTableView::setModel(m_sortFilterModel);
 
-    _addPointAction->setText(tr("Add point"));
-    _addPointAction->setIcon(QIcon("://icons/table_row_insert.png"));
-    connect(_addPointAction, SIGNAL(triggered()), this, SLOT(addRow()));
-    _contextMenu->addAction(_addPointAction);
+    m_addPointAction->setText(tr("Add point"));
+    m_addPointAction->setIcon(QIcon("://icons/table_row_insert.png"));
+    connect(m_addPointAction, SIGNAL(triggered()), this, SLOT(addRow()));
+    m_contextMenu->addAction(m_addPointAction);
 
-    _removePointAction->setText(tr("Remove point"));
-    _removePointAction->setIcon(QIcon("://icons/table_row_delete.png"));
-    connect(_removePointAction, SIGNAL(triggered()), this, SLOT(removeSelectedRows()));
-    _contextMenu->addAction(_removePointAction);
+    m_removePointAction->setText(tr("Remove point"));
+    m_removePointAction->setIcon(QIcon("://icons/table_row_delete.png"));
+    connect(m_removePointAction, SIGNAL(triggered()), this, SLOT(removeSelectedRows()));
+    m_contextMenu->addAction(m_removePointAction);
 
-    _pointDependingAction->setText(tr("Point depending"));
-    _pointDependingAction->setIcon(QIcon("://icons/arrow_switch.png"));
-    connect(_pointDependingAction, SIGNAL(triggered()), this, SLOT(showPointDepending()));
-    _contextMenu->addAction(_pointDependingAction);
+    m_pointDependingAction->setText(tr("Point depending"));
+    m_pointDependingAction->setIcon(QIcon("://icons/arrow_switch.png"));
+    connect(m_pointDependingAction, SIGNAL(triggered()), this, SLOT(showPointDepending()));
+    m_contextMenu->addAction(m_pointDependingAction);
 
-    _findBasePointAction->setText(tr("Move to &base point"));
-    _findBasePointAction->setShortcut(QKeySequence(tr("Ctrl+B", "Move to base point")));
-    connect(_findBasePointAction, SIGNAL(triggered()), this, SLOT(findBasePoint()));
-    _contextMenu->addAction(_findBasePointAction);
+    m_findBasePointAction->setText(tr("Move to &base point"));
+    m_findBasePointAction->setShortcut(QKeySequence(tr("Ctrl+B", "Move to base point")));
+    connect(m_findBasePointAction, SIGNAL(triggered()), this, SLOT(findBasePoint()));
+    m_contextMenu->addAction(m_findBasePointAction);
 
     connect(selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)), this, SLOT(checkActions(QModelIndex,QModelIndex)));
     connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(checkSelection()));
@@ -51,86 +51,76 @@ IqAmeGeoPointsTableView::IqAmeGeoPointsTableView(QWidget *parent) :
 
 void IqAmeGeoPointsTableView::showContextMenu(const QPoint &pos)
 {
-    _currentIndex = indexAt(pos);
+    m_currentIndex = indexAt(pos);
 
-    if (_currentIndex.isValid())
-        _contextMenu->exec(QCursor::pos());
+    if (m_currentIndex.isValid())
+        m_contextMenu->exec(QCursor::pos());
 
-    _currentIndex = QModelIndex();
+    m_currentIndex = QModelIndex();
 }
 
 void IqAmeGeoPointsTableView::checkActions(const QModelIndex &current, const QModelIndex &previous)
 {
     Q_UNUSED(previous);
 
-    if (_geoPointModel)
-    {
-        _addPointAction->setEnabled(true);
+    if (m_geoPointModel) {
+        m_addPointAction->setEnabled(true);
 
-        IqAmeGeoPoint *point = _geoPointModel->point(model()->data(model()->index(current.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
+        IqAmeGeoPoint *point = m_geoPointModel->point(model()->data(model()->index(current.row(), IqAmeGeoPointsModel::NAME_COLUMN)).toString());
 
-        if (point)
-        {
-            _removePointAction->setEnabled(true);
+        if (point) {
+            m_removePointAction->setEnabled(true);
 
-            if (point->definitionType() != IqAmeGeoPoint::Geo && point->basePoint())
-            {
-                _findBasePointAction->setEnabled(true);
-            }
-            else
-            {
-                _findBasePointAction->setEnabled(false);
+            if (point->definitionType() != IqAmeGeoPoint::Geo && point->basePoint()) {
+                m_findBasePointAction->setEnabled(true);
+            } else {
+                m_findBasePointAction->setEnabled(false);
             }
         }
-    }
-    else
-    {
-        _addPointAction->setEnabled(false);
-        _removePointAction->setEnabled(false);
-        _findBasePointAction->setEnabled(false);
+    } else {
+        m_addPointAction->setEnabled(false);
+        m_removePointAction->setEnabled(false);
+        m_findBasePointAction->setEnabled(false);
     }
 }
 
 void IqAmeGeoPointsTableView::setModel(IqAmeGeoPointsModel *model)
 {
-    if (_geoPointModel != model)
-    {
-        _geoPointModel = model;
+    if (m_geoPointModel != model) {
+        m_geoPointModel = model;
 
-        connect(_geoPointModel, SIGNAL(modelAboutToBeReset()), this, SLOT(disableSortModel()));
-        connect(_geoPointModel, SIGNAL(modelReset()), this, SLOT(enableSortModel()));
+        connect(m_geoPointModel, SIGNAL(modelAboutToBeReset()), this, SLOT(disableSortModel()));
+        connect(m_geoPointModel, SIGNAL(modelReset()), this, SLOT(enableSortModel()));
     }
 }
 
 void IqAmeGeoPointsTableView::disableSortModel()
 {
-    _delegate->setSourceGeoPointsModel(NULL);
-    _sortFilterModel->setSourceModel(NULL);
+    m_delegate->setSourceGeoPointsModel(Q_NULLPTR);
+    m_sortFilterModel->setSourceModel(Q_NULLPTR);
 }
 
 void IqAmeGeoPointsTableView::enableSortModel()
 {
 
-    _delegate->setSourceGeoPointsModel(_geoPointModel);
-    _sortFilterModel->setSourceModel(_geoPointModel);
-    _sortFilterModel->invalidate();
+    m_delegate->setSourceGeoPointsModel(m_geoPointModel);
+    m_sortFilterModel->setSourceModel(m_geoPointModel);
+    m_sortFilterModel->invalidate();
 }
 
 void IqAmeGeoPointsTableView::findBasePoint()
 {
-    if (_geoPointModel)
-    {
-        QModelIndex current = _currentIndex;
+    if (m_geoPointModel) {
+        QModelIndex current = m_currentIndex;
         if (!current.isValid())
             current = currentIndex();
 
         QString basePointName = model()->data(model()->index(current.row(), IqAmeGeoPointsModel::BASE_POINT_COLUMN)).toString();
 
-        if (!basePointName.isEmpty() && _geoPointModel)
-        {
-            int pointRow = _geoPointModel->row(_geoPointModel->point(basePointName));
+        if (!basePointName.isEmpty() && m_geoPointModel) {
+            int pointRow = m_geoPointModel->row(m_geoPointModel->point(basePointName));
 
-            QModelIndex pointIndex = _sortFilterModel->mapFromSource(_geoPointModel->index(pointRow, 0));
+            QModelIndex pointIndex = m_sortFilterModel->mapFromSource(m_geoPointModel->index(pointRow, 0));
 
             clearSelection();
             selectRow(pointIndex.row());
@@ -141,23 +131,19 @@ void IqAmeGeoPointsTableView::findBasePoint()
 
 void IqAmeGeoPointsTableView::addRow()
 {
-    if (_geoPointModel)
-    {
+    if (m_geoPointModel) {
         bool ok = true;
         QString pointName = QInputDialog::getText(this, tr("Point name"), tr("Enter point name"), QLineEdit::Normal, "",&ok);
-        IqAmeGeoPoint *existPoint = _geoPointModel->point(pointName, Qt::CaseInsensitive);
-        while ((pointName.isEmpty() || existPoint) && ok)
-        {
-            if (pointName.isEmpty())
-            {
+        IqAmeGeoPoint *existPoint = m_geoPointModel->point(pointName, Qt::CaseInsensitive);
+        while ((pointName.isEmpty() || existPoint) && ok) {
+            if (pointName.isEmpty()) {
                 pointName =  QInputDialog::getText(this, tr("Point name"), tr("Point name must not empy! Enter point name"), QLineEdit::Normal, pointName, &ok);
-                existPoint = _geoPointModel->point(pointName, Qt::CaseInsensitive);
+                existPoint = m_geoPointModel->point(pointName, Qt::CaseInsensitive);
                 continue;
             }
-            if (existPoint)
-            {
+            if (existPoint) {
                 pointName =  QInputDialog::getText(this, tr("Point name"), tr("Point with this name already exist! Enter new point name"), QLineEdit::Normal, pointName, &ok);
-                existPoint = _geoPointModel->point(pointName, Qt::CaseInsensitive);
+                existPoint = m_geoPointModel->point(pointName, Qt::CaseInsensitive);
                 continue;
             }
         }
@@ -165,16 +151,16 @@ void IqAmeGeoPointsTableView::addRow()
         if (!ok)
             return;
 
-        QModelIndex current = _currentIndex;
+        QModelIndex current = m_currentIndex;
         if (!current.isValid())
             current = currentIndex();
 
-        int row = _sortFilterModel->mapToSource(current).row() + 1;
+        int row = m_sortFilterModel->mapToSource(current).row() + 1;
 
-        _geoPointModel->insertRow(row);
-        _geoPointModel->setData(_geoPointModel->index(row, IqAmeGeoPointsModel::NAME_COLUMN), pointName);
+        m_geoPointModel->insertRow(row);
+        m_geoPointModel->setData(m_geoPointModel->index(row, IqAmeGeoPointsModel::NAME_COLUMN), pointName);
 
-        QModelIndex pointIndex = _sortFilterModel->mapFromSource(_geoPointModel->index(row, 0));
+        QModelIndex pointIndex = m_sortFilterModel->mapFromSource(m_geoPointModel->index(row, 0));
 
         clearSelection();
         selectRow(pointIndex.row());
@@ -184,22 +170,19 @@ void IqAmeGeoPointsTableView::addRow()
 
 void IqAmeGeoPointsTableView::removeSelectedRows()
 {
-    if (_geoPointModel)
-    {
-        QModelIndex current = _currentIndex;
+    if (m_geoPointModel) {
+        QModelIndex current = m_currentIndex;
         if (!current.isValid())
             current = currentIndex();
 
         QSet<int> rowToRemove;
 
-        foreach (QModelIndex selection, selectionModel()->selectedIndexes())
-        {
+        foreach (QModelIndex selection, selectionModel()->selectedIndexes()) {
             rowToRemove << selection.row();
         }
 
         //Если мы тыкнули внутрь выделения, то удалим все выделение
-        if (rowToRemove.contains(current.row()))
-        {
+        if (rowToRemove.contains(current.row())) {
 
             if (rowToRemove.isEmpty())
                 return;
@@ -207,32 +190,28 @@ void IqAmeGeoPointsTableView::removeSelectedRows()
             QList<int> sortRowToRemove = rowToRemove.toList();
             qSort(sortRowToRemove);
 
-            foreach (int row, sortRowToRemove)
-            {
+            foreach (int row, sortRowToRemove) {
                 if (!rowAvailableToBeRemoved(row))
                     return;
             }
 
             int fistRow = sortRowToRemove.first();
 
-            for (int i = sortRowToRemove.count() - 1; i > -1; i--)
-            {
-                _geoPointModel->removeRow(_sortFilterModel->mapToSource(model()->index(sortRowToRemove[i], 0)).row());
+            for (int i = sortRowToRemove.count() - 1; i > -1; i--) {
+                m_geoPointModel->removeRow(m_sortFilterModel->mapToSource(model()->index(sortRowToRemove[i], 0)).row());
             }
 
             clearSelection();
             selectRow(fistRow);
             showRow(fistRow);
-        }
-        else
-        {
+        } else {
             //Иначе удалим только строку в которую тыкнули
             if (!rowAvailableToBeRemoved(current.row()))
                 return;
 
             int row = current.row();
 
-            _geoPointModel->removeRow(_sortFilterModel->mapToSource(current).row());
+            m_geoPointModel->removeRow(m_sortFilterModel->mapToSource(current).row());
 
             clearSelection();
             selectRow(row);
@@ -248,28 +227,23 @@ void IqAmeGeoPointsTableView::checkSelection()
 
 bool IqAmeGeoPointsTableView::rowAvailableToBeRemoved(const int row)
 {
-    if (_geoPointModel)
-    {
+    if (m_geoPointModel) {
         QString pointName = model()->data(model()->index(row, IqAmeGeoPointsModel::NAME_COLUMN)).toString();
 
-        QList<IqAmeGeoPoint *> relativePoints = _geoPointModel->point(pointName)->relativePoints();
-        if (relativePoints.count() == 0)
-        {
+        QList<IqAmeGeoPoint *> relativePoints = m_geoPointModel->point(pointName)->relativePoints();
+        if (relativePoints.count() == 0) {
             return true;
-        }
-        else
-        {
+        } else {
 
 
             QString dependsPoins;
-            foreach (IqAmeGeoPoint *point, relativePoints)
-            {
+            foreach (IqAmeGeoPoint *point, relativePoints) {
                 dependsPoins += tr("\t\t\t\"%0\"\n", "Indent for Can not remove point message").arg(point->name());
             }
 
             QMessageBox::warning(this, tr("Can not remove point"), tr("Point \"%0\" can not removed.\n\n"
-                                                                      "Depend on it the following points:"
-                                                                      "\t%1")
+                                 "Depend on it the following points:"
+                                 "\t%1")
                                  .arg(pointName)
                                  .arg(dependsPoins.trimmed()));
 
@@ -288,14 +262,13 @@ void IqAmeGeoPointsTableView::showPointDepending()
     if (pointName.isEmpty())
         return;
 
-    IqAmeGeoPoint *point = _geoPointModel->point(pointName);
+    IqAmeGeoPoint *point = m_geoPointModel->point(pointName);
 
     if (!point)
         return;
 
     QString dependsPoints;
-    foreach (IqAmeGeoPoint *dependPoint, point->relativePoints())
-    {
+    foreach (IqAmeGeoPoint *dependPoint, point->relativePoints()) {
         dependsPoints += "\t\"" + dependPoint->name() + "\"\n";
     }
 
@@ -303,8 +276,8 @@ void IqAmeGeoPointsTableView::showPointDepending()
         dependsPoints = tr("NONE");
 
     QMessageBox::information(this, tr("Point depending"), tr("Depending for point \"%0\"\n\n"
-                                                             "Other point:"
-                                                             "\t%1")
+                             "Other point:"
+                             "\t%1")
                              .arg(pointName)
                              .arg(dependsPoints.trimmed()));
 }

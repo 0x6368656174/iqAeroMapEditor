@@ -10,6 +10,8 @@ LIBS     += -L/home/pashok/libs/geographic/lib/ -lGeographic
 
 INCLUDEPATH += /home/pashok/libs/geographic/include/
 
+#LIBS += -LC:\Qt\5.3\mingw482_32\bin -lGeographic9
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = iqaeromapeditor
@@ -40,7 +42,12 @@ SOURCES += main.cpp\
     iqameshapeobject.cpp \
     iqametext.cpp \
     iqamegeopointssortfiltermodel.cpp \
-    iqamelogdialog.cpp
+    iqamelogdialog.cpp \
+    iqamenamedshapeobject.cpp \
+    iqamesublinegraphicsitem.cpp \
+    iqamelinegraphicsitem.cpp \
+    iqamelayergraphicsitem.cpp \
+    iqametextgraphicsitem.cpp
 
 HEADERS  += iqamemainwindow.h \
     iqameatdmenueditdialog.h \
@@ -65,7 +72,12 @@ HEADERS  += iqamemainwindow.h \
     iqameshapeobject.h \
     iqametext.h \
     iqamegeopointssortfiltermodel.h \
-    iqamelogdialog.h
+    iqamelogdialog.h \
+    iqamenamedshapeobject.h \
+    iqamesublinegraphicsitem.h \
+    iqamelinegraphicsitem.h \
+    iqamelayergraphicsitem.h \
+    iqametextgraphicsitem.h
 
 FORMS    += iqamemainwindow.ui \
     iqameatdmenueditdialog.ui \

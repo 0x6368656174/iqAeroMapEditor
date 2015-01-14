@@ -27,8 +27,7 @@ IqAmeGraphicEditWidget::~IqAmeGraphicEditWidget()
 
 void IqAmeGraphicEditWidget::setLayer(IqAmeLayer *layer)
 {
-    if (layer)
-    {
+    if (layer) {
         ui->shapesTableView->setModel(layer->shapesModel());
 #if QT_VERSION >= 0x050000
         ui->shapesTableView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);

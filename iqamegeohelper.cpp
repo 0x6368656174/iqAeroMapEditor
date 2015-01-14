@@ -2,7 +2,7 @@
 #include <math.h>
 #include <QRegExp>
 
-IqAmeGeoHelper * IqAmeGeoHelper::_instance = NULL;
+IqAmeGeoHelper * IqAmeGeoHelper::_instance = Q_NULLPTR;
 
 IqAmeGeoHelper::IqAmeGeoHelper()
 {
@@ -10,16 +10,13 @@ IqAmeGeoHelper::IqAmeGeoHelper()
 
 IqAmeGeoHelper * IqAmeGeoHelper::instance()
 {
-    if (IqAmeGeoHelper::_instance)
-    {
+    if (IqAmeGeoHelper::_instance) {
         return IqAmeGeoHelper::_instance;
-    }
-    else
-    {
+    } else {
         IqAmeGeoHelper::_instance = new IqAmeGeoHelper();
         return IqAmeGeoHelper::_instance;
     }
-    return NULL;
+    return Q_NULLPTR;
 }
 
 void IqAmeGeoHelper::setLocalCartesianOrigin(const qreal latitude, const qreal longitude)
@@ -35,8 +32,7 @@ void IqAmeGeoHelper::toLocalCartesian(const qreal latitude, const qreal longitud
 bool IqAmeGeoHelper::coordinateFromString(const QString &string, qreal &latitude, qreal &longitude)
 {
     QRegExp coordRX ("([NS])(-{0,1})(\\d{2})(\\d{2})(\\d{2})(\\d*)\\s*([WE])(-{0,1})(\\d{3})(\\d{2})(\\d{2})(\\d*)");
-    if (coordRX.indexIn(string) != -1)
-    {
+    if (coordRX.indexIn(string) != -1) {
         latitude = coordRX.cap(3).toDouble() + coordRX.cap(4).toDouble()/60 + coordRX.cap(5).toDouble()/3600 + coordRX.cap(6).toDouble()/360000;
         if (coordRX.cap(1) == "S")
             latitude = -latitude;
@@ -57,8 +53,7 @@ bool IqAmeGeoHelper::coordinateFromString(const QString &string, qreal &latitude
 bool IqAmeGeoHelper::latitudeFromString(const QString &string, qreal &latitude)
 {
     QRegExp coordRX ("([NS])(-{0,1})(\\d{2})(\\d{2})(\\d{2})(\\d*)");
-    if (coordRX.indexIn(string) != -1)
-    {
+    if (coordRX.indexIn(string) != -1) {
         latitude = coordRX.cap(3).toDouble() + coordRX.cap(4).toDouble()/60 + coordRX.cap(5).toDouble()/3600 + coordRX.cap(6).toDouble()/360000;
         if (coordRX.cap(1) == "S")
             latitude = -latitude;
@@ -74,8 +69,7 @@ bool IqAmeGeoHelper::latitudeFromString(const QString &string, qreal &latitude)
 bool IqAmeGeoHelper::longitudeFromString(const QString &string, qreal &longitude)
 {
     QRegExp coordRX ("([WE])(-{0,1})(\\d{3})(\\d{2})(\\d{2})(\\d*)");
-    if (coordRX.indexIn(string) != -1)
-    {
+    if (coordRX.indexIn(string) != -1) {
         longitude = coordRX.cap(3).toDouble() + coordRX.cap(4).toDouble()/60 + coordRX.cap(5).toDouble()/3600 + coordRX.cap(6).toDouble()/360000;
         if (coordRX.cap(1) == "W")
             longitude = -longitude;
@@ -102,38 +96,31 @@ QString IqAmeGeoHelper::latitudeToString(const qreal latitude, bool pretty)
     int latSec = ((absLat - latGr)*60 - latMin)*60;
     int latMSec = floor((((absLat - latGr)*60 - latMin)*60 - latSec)*100 + 0.5);
 
-    if (latMSec == 100)
-    {
+    if (latMSec == 100) {
         latSec++;
         latMSec = 0;
     }
 
     QString result;
-    if (latitude > 0)
-    {
+    if (latitude > 0) {
         result += "N";
-    }
-    else
-    {
+    } else {
         result += "S";
     }
 
-    if (!pretty)
-    {
+    if (!pretty) {
         result += QString("%0%1%2%3")
-                .arg(latGr, 2, 'f', 0, '0')
-                .arg(latMin, 2, 'f', 0, '0')
-                .arg(latSec, 2, 'f', 0, '0')
-                .arg(latMSec, 2, 'f', 0, '0');
-    }
-    else
-    {
+                  .arg(latGr, 2, 'f', 0, '0')
+                  .arg(latMin, 2, 'f', 0, '0')
+                  .arg(latSec, 2, 'f', 0, '0')
+                  .arg(latMSec, 2, 'f', 0, '0');
+    } else {
         result += QString("%0%1%2'%3.%4\"")
-                .arg(latGr, 2, 'f', 0, '0')
-                .arg(QChar(0xB0))
-                .arg(latMin, 2, 'f', 0, '0')
-                .arg(latSec, 2, 'f', 0, '0')
-                .arg(latMSec, 2, 'f', 0, '0');
+                  .arg(latGr, 2, 'f', 0, '0')
+                  .arg(QChar(0xB0))
+                  .arg(latMin, 2, 'f', 0, '0')
+                  .arg(latSec, 2, 'f', 0, '0')
+                  .arg(latMSec, 2, 'f', 0, '0');
     }
 
     return result;
@@ -148,38 +135,31 @@ QString IqAmeGeoHelper::longitudeToString(const qreal longitude, bool pretty)
     int lonSec = ((absLon - lonGr)*60 - lonMin)*60;
     int lonMSec = floor((((absLon - lonGr)*60 - lonMin)*60 - lonSec)*100 + 0.5);
 
-    if (lonMSec == 100)
-    {
+    if (lonMSec == 100) {
         lonSec++;
         lonMSec = 0;
     }
 
     QString result;
-    if (longitude > 0)
-    {
+    if (longitude > 0) {
         result += "E";
-    }
-    else
-    {
+    } else {
         result += "W";
     }
 
-    if (!pretty)
-    {
-    result += QString("%0%1%2%3")
-            .arg(lonGr, 3, 'f', 0, '0')
-            .arg(lonMin, 2, 'f', 0, '0')
-            .arg(lonSec, 2, 'f', 0, '0')
-            .arg(lonMSec, 2, 'f', 0, '0');
-    }
-    else
-    {
+    if (!pretty) {
+        result += QString("%0%1%2%3")
+                  .arg(lonGr, 3, 'f', 0, '0')
+                  .arg(lonMin, 2, 'f', 0, '0')
+                  .arg(lonSec, 2, 'f', 0, '0')
+                  .arg(lonMSec, 2, 'f', 0, '0');
+    } else {
         result += QString("%0%1%2'%3.%4\"")
-                .arg(lonGr, 3, 'f', 0, '0')
-                .arg(QChar(0xB0))
-                .arg(lonMin, 2, 'f', 0, '0')
-                .arg(lonSec, 2, 'f', 0, '0')
-                .arg(lonMSec, 2, 'f', 0, '0');
+                  .arg(lonGr, 3, 'f', 0, '0')
+                  .arg(QChar(0xB0))
+                  .arg(lonMin, 2, 'f', 0, '0')
+                  .arg(lonSec, 2, 'f', 0, '0')
+                  .arg(lonMSec, 2, 'f', 0, '0');
     }
 
     return result;

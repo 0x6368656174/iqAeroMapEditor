@@ -11,17 +11,22 @@
 
 IqAmeShapesModel::IqAmeShapesModel(QObject *parent) :
     QAbstractTableModel(parent),
-    _baseAttributes(new IqAmeShapesAttributes(this))
+    m_baseAttributes(new IqAmeShapesAttributes(this))
 {
+}
+
+QList<IqAmeNamedShapeObject *> IqAmeShapesModel::toList() const
+{
+    return m_shapes;
 }
 
 void IqAmeShapesModel::clear()
 {
     emit beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
 
-    qDeleteAll(_shapes);
+    qDeleteAll(m_shapes);
 
-    _shapes.clear();
+    m_shapes.clear();
 
     emit endRemoveRows();
 }
@@ -33,8 +38,7 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
     if (fileName.isEmpty())
         return false;
 
-    if (!QFile::exists(fileName))
-    {
+    if (!QFile::exists(fileName)) {
         QString error = tr("File \"%0\" not exist.").arg(fileName);
         qWarning() << error;
         if (lastError)
@@ -46,8 +50,7 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
     qDebug() << tr("Starting parsing shapes from \"%0\"...").arg(fileName);
 
     QFile file (fileName);
-    if (!file.open(QFile::ReadOnly))
-    {
+    if (!file.open(QFile::ReadOnly)) {
         QString error = tr("Can not open \"%0\" file.").arg(fileName);
         qWarning() << error;
         if (lastError)
@@ -70,15 +73,11 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
 
     QStringList shapes;
     QStringList shapeTypes;
-    foreach (QString str, fileStringList)
-    {
-        if (shapeRx.indexIn(str) != -1)
-        {
+    foreach (QString str, fileStringList) {
+        if (shapeRx.indexIn(str) != -1) {
             shapes.append(str.trimmed());
             shapeTypes.append(shapeRx.cap(1));
-        }
-        else
-        {
+        } else {
             if (shapes.count() > 0)
                 shapes.last().append(str.trimmed());
         }
@@ -87,42 +86,31 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
     //Уберем подряд идущие запятые, т.к. это ошибка синтаксиса
     QRegExp doubleCommaRx(",[\\s,]*,");
 
-    IqAmeShapesAttributes *previosShapeOutputAttribute = _baseAttributes;
+    IqAmeShapesAttributes *previosShapeOutputAttribute = m_baseAttributes;
 
-    for (int i = 0; i < shapes.count(); i++)
-    {
+    for (int i = 0; i < shapes.count(); i++) {
         //Обработаем приметив
         QString shape = shapes[i];
         shape.replace(doubleCommaRx, ",");
         QString shapeType = shapeTypes[i];
-        if (!shape.isEmpty())
-        {
-            if (shapeType.compare("LINE", Qt::CaseInsensitive) == 0 || shapeType.compare("L", Qt::CaseInsensitive) == 0)
-            {
+        if (!shape.isEmpty()) {
+            if (shapeType.compare("LINE", Qt::CaseInsensitive) == 0 || shapeType.compare("L", Qt::CaseInsensitive) == 0) {
                 IqAmeLine *line = new IqAmeLine(this);
                 line->setInputAttributes(previosShapeOutputAttribute);
-                if (line->loadFromString(shape))
-                {
-                    _shapes << line;
+                if (line->loadFromString(shape)) {
+                    m_shapes << line;
                     previosShapeOutputAttribute = line->outputAttributes();
-                }
-                else
-                {
+                } else {
                     qWarning() << tr("Can not parse line string \"%0\". Skipped.").arg(shape);
                     line->deleteLater();
                 }
-            }
-            else if (shapeType.compare("TEXT", Qt::CaseInsensitive) == 0 || shapeType.compare("T", Qt::CaseInsensitive) == 0)
-            {
+            } else if (shapeType.compare("TEXT", Qt::CaseInsensitive) == 0 || shapeType.compare("T", Qt::CaseInsensitive) == 0) {
                 IqAmeText *text = new IqAmeText(this);
                 text->setInputAttributes(previosShapeOutputAttribute);
-                if (text->loadFromString(shape))
-                {
-                    _shapes << text;
+                if (text->loadFromString(shape)) {
+                    m_shapes << text;
                     previosShapeOutputAttribute = text->outputAttributes();
-                }
-                else
-                {
+                } else {
                     qWarning() << tr("Can not parse text string \"%0\". Skipped.").arg(shape);
                     text->deleteLater();
                 }
@@ -138,42 +126,33 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
     if (index.row() < 0 || index.row() >= rowCount())
         return QVariant();
 
-    IqAmeShapeObject *shape = _shapes.at(index.row());
+    IqAmeNamedShapeObject *shape = m_shapes.at(index.row());
 
-    if (!shape)
-        return QVariant();
+    Q_CHECK_PTR(shape);
 
-    switch (role)
-    {
-    case Qt::DisplayRole:
-    {
-        switch (index.column())
-        {
-        case COLUMN_TYPE:
-        {
+    switch (role) {
+    case Qt::DisplayRole: {
+        switch (index.column()) {
+        case COLUMN_TYPE: {
             IqAmeLine *line = qobject_cast<IqAmeLine *>(shape);
-            if (line)
-            {
+            if (line) {
                 return "L";
             }
             IqAmeText *text = qobject_cast<IqAmeText *>(shape);
-            if (text)
-            {
+            if (text) {
                 return "T";
             }
 
             break;
         }
-        case COLUMN_NAME:
-        {
+        case COLUMN_NAME: {
             return shape->name();
         }
         }
 
         break;
     }
-    case ShapeObject:
-    {
+    case ShapeObject: {
         return QVariant::fromValue(shape);
     }
     }
@@ -183,20 +162,14 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
 
 QVariant IqAmeShapesModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal)
-    {
-        switch (role)
-        {
-        case Qt::DisplayRole:
-        {
-            switch (section)
-            {
-            case COLUMN_TYPE:
-            {
+    if (orientation == Qt::Horizontal) {
+        switch (role) {
+        case Qt::DisplayRole: {
+            switch (section) {
+            case COLUMN_TYPE: {
                 return tr("Type");
             }
-            case COLUMN_NAME:
-            {
+            case COLUMN_NAME: {
                 return tr("Name");
             }
             }
@@ -205,4 +178,15 @@ QVariant IqAmeShapesModel::headerData(int section, Qt::Orientation orientation, 
     }
 
     return QAbstractTableModel::headerData(section, orientation, role);
+}
+
+int IqAmeShapesModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent); return 2;
+}
+
+int IqAmeShapesModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return m_shapes.count();
 }

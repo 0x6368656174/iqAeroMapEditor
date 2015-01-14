@@ -5,6 +5,8 @@
 #include <QRectF>
 #include "iqlayerview.h"
 #include "iqameshapesmodel.h"
+#include <QGraphicsItemGroup>
+#include "iqamelayergraphicsitem.h"
 
 class IqAmeLayer : public QObject
 {
@@ -17,7 +19,7 @@ class IqAmeLayer : public QObject
     Q_PROPERTY(QString videomapName READ videomapName WRITE setVideomapName NOTIFY videomapNameChanged)
     Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
 public:
-    explicit IqAmeLayer(QObject *parent = 0);
+    explicit IqAmeLayer(QObject *parent = Q_NULLPTR);
 
     void insertChildLayer(const qint32 index, IqAmeLayer *layer);
 
@@ -27,38 +29,40 @@ public:
 
     IqAmeLayer * childLayer(const qint32 index) const;
 
-    inline QList<IqAmeLayer *> childLayers() const {return _childLayers;}
+    QList<IqAmeLayer *> childLayers() const;
 
     QList<IqAmeLayer *> allChildLayers() const;
 
-    inline IqAmeShapesModel * shapesModel() const {return _shapesModel;}
+    IqAmeShapesModel *shapesModel() const;
 
     qint32 index() const;
 
-    bool loadFromFile(const QString &fileName, QString *lastError = NULL);
+    bool loadFromFile(const QString &fileName, QString *lastError = Q_NULLPTR);
 
-    bool loadFromFile(QString *lastError = NULL);
+    bool loadFromFile(QString *lastError = Q_NULLPTR);
 
-    void paindGl(const QRectF &area, IqLayerView *layerView);
+    IqAmeLayerGraphicsItem *graphicsItem();
+
+    void updateGraphicsItem();
 
 public:
-    inline QString atdMenuName() const {return _atdMenuName;}
+    QString atdMenuName() const;
     void setAtdMenuName(const QString &atdMenuName);
 
-    inline QString fileName() const {return _fileName;}
+    QString fileName() const;
     void setFileName(const QString &fileName);
 
-    inline QString description() const {return _description;}
+    QString description() const;
     void setDescription(const QString &description);
 
-    inline qint32 childLayersCount() const {return _childLayers.count();}
+    qint32 childLayersCount() const;
 
-    inline IqAmeLayer * parentLayer() const {return _parentLayer;}
+    IqAmeLayer *parentLayer() const;
 
-    inline QString videomapName() const {return _videomapName;}
+    QString videomapName() const;
     void setVideomapName(const QString &videomapName);
 
-    inline bool visible() const {return _visible;}
+    bool visible();
     void setVisible(const bool visible);
 
 signals:
@@ -71,15 +75,16 @@ signals:
     void visibleChanged();
 
 private:
-    QString _atdMenuName;
-    QString _fileName;
-    QString _description;
-    QString _videomapName;
-    bool _visible;
-    IqAmeShapesModel *_shapesModel;
+    QString m_atdMenuName;
+    QString m_fileName;
+    QString m_description;
+    QString m_videomapName;
+    IqAmeShapesModel *m_shapesModel;
 
-    QList<IqAmeLayer *> _childLayers;
-    IqAmeLayer * _parentLayer;
+    QList<IqAmeLayer *> m_childLayers;
+    IqAmeLayer * m_parentLayer;
+
+    IqAmeLayerGraphicsItem *m_graphicsItem;
 
     void setParentLayer(IqAmeLayer *layer);
 };
