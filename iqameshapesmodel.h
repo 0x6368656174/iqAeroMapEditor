@@ -37,10 +37,17 @@ public:
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const Q_DECL_OVERRIDE;
 
+public:
+    bool interactive() const;
+    void setInteractive(bool interactive);
+
+signals:
+    void interactiveChanged();
+
 private:
     QList<IqAmeNamedShapeObject *> m_shapes;
-
     IqAmeShapesAttributes *m_baseAttributes;
+    bool m_interactive;
 
     void clear();
 };

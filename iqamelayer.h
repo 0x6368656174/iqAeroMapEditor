@@ -6,7 +6,6 @@
 #include "iqlayerview.h"
 #include "iqameshapesmodel.h"
 #include <QGraphicsItemGroup>
-#include "iqamelayergraphicsitem.h"
 
 class IqAmeLayer : public QObject
 {
@@ -40,8 +39,6 @@ public:
     bool loadFromFile(const QString &fileName, QString *lastError = Q_NULLPTR);
 
     bool loadFromFile(QString *lastError = Q_NULLPTR);
-
-    IqAmeLayerGraphicsItem *graphicsItem();
 
     void updateGraphicsItem();
 
@@ -84,7 +81,7 @@ private:
     QList<IqAmeLayer *> m_childLayers;
     IqAmeLayer * m_parentLayer;
 
-    IqAmeLayerGraphicsItem *m_graphicsItem;
+    bool m_visible;
 
     void setParentLayer(IqAmeLayer *layer);
 };

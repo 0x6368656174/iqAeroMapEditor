@@ -2,9 +2,10 @@
 #define IQAMETEXTGRAPHICSITEM_H
 
 #include <QGraphicsSimpleTextItem>
+#include "iqameshapelink.h"
 
 class IqAmeText;
-class IqAmeTextGraphicsItem : public QGraphicsSimpleTextItem
+class IqAmeTextGraphicsItem : public QGraphicsSimpleTextItem, public IqAmeShapeLink
 {
 public:
     explicit IqAmeTextGraphicsItem(QGraphicsItem *parent = Q_NULLPTR);

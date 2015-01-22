@@ -2,9 +2,10 @@
 #define IQAMESUBLINEGRAPHICSITEM_H
 
 #include <QGraphicsItem>
+#include "iqameshapelink.h"
 
 class IqAmeSubLine;
-class IqAmeSublineGraphicsItem : public QGraphicsItem
+class IqAmeSublineGraphicsItem : public QGraphicsItem, public IqAmeShapeLink
 {
 public:
     explicit IqAmeSublineGraphicsItem(QGraphicsItem * parent = Q_NULLPTR);
@@ -14,6 +15,7 @@ public:
 public:
     virtual QRectF boundingRect() const Q_DECL_OVERRIDE;
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
+    virtual QPainterPath shape() const Q_DECL_OVERRIDE;
 
 public:
     void setSubLine(IqAmeSubLine *subLine);

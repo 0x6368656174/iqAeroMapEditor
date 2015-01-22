@@ -4,7 +4,6 @@
 #include "iqamenamedshapeobject.h"
 #include "iqamesubline.h"
 #include <QGraphicsItemGroup>
-#include "iqamelinegraphicsitem.h"
 
 class IqAmeLine : public IqAmeNamedShapeObject
 {
@@ -14,9 +13,9 @@ public:
 
     ~IqAmeLine();
 
-    virtual IqAmeLineGraphicsItem *graphicsItem() Q_DECL_OVERRIDE;
+    virtual QList<QGraphicsItem *> graphicsItems() Q_DECL_OVERRIDE;
 
-    virtual void updateGraphicsItem() Q_DECL_OVERRIDE;
+    virtual void updateGraphicsItems() Q_DECL_OVERRIDE;
 
     virtual bool loadFromString(const QString &string) Q_DECL_OVERRIDE;
 
@@ -36,7 +35,6 @@ private:
 private:
     QList<IqAmeSubLine *> m_subLines;
     IqAmeShapesAttributes * m_outputAttributes;
-    IqAmeLineGraphicsItem *m_graphicsItem;
 };
 
 #endif // IQAMELINE_H

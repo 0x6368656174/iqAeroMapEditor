@@ -15,11 +15,11 @@ public:
 
     ~IqAmeText();
 
-    virtual IqAmeTextGraphicsItem *graphicsItem() Q_DECL_OVERRIDE;
+    virtual QList<QGraphicsItem *> graphicsItems() Q_DECL_OVERRIDE;
 
-    virtual void updateGraphicsItem() Q_DECL_OVERRIDE;
+    virtual void updateGraphicsItems() Q_DECL_OVERRIDE;
 
-    virtual bool loadFromString(const QString &string);
+    virtual bool loadFromString(const QString &string) Q_DECL_OVERRIDE;
 
 public:
     QString text() const;
@@ -31,6 +31,9 @@ public:
 signals:
     void textChanged();
     void pointChanged();
+
+private:
+    IqAmeTextGraphicsItem *textGraphicsItem();
 
 private:
     QString m_text;

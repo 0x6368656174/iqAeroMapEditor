@@ -1,16 +1,15 @@
 #include "iqamesubline.h"
 #include "iqamestraightlinesegment.h"
 #include "iqameapplication.h"
-#include <QtOpenGL>
 #include <QRegExp>
 #include <QDebug>
 #include <QStringList>
+#include "iqameline.h"
 
 IqAmeSubLine::IqAmeSubLine(QObject *parent) :
     IqAmeShapeObject(parent),
     m_graphicsItem(Q_NULLPTR)
 {
-    connect(this, &IqAmeSubLine::outputAttributesChanged, this, &IqAmeSubLine::updateGraphicsItem);
 }
 
 IqAmeSubLine::~IqAmeSubLine()
@@ -24,14 +23,10 @@ IqAmeSublineGraphicsItem *IqAmeSubLine::graphicsItem()
     if (!m_graphicsItem) {
         m_graphicsItem = new IqAmeSublineGraphicsItem();
         m_graphicsItem->setSubLine(this);
-        m_graphicsItem->updateCache();
+        m_graphicsItem->setNamedShapeObject(line());
     }
 
     return m_graphicsItem;
-}
-
-void IqAmeSubLine::updateGraphicsItem()
-{
 }
 
 void IqAmeSubLine::appendSegment(IqAmeLineSegment *segment)
@@ -62,6 +57,17 @@ QList<IqAmeLineSegment *> IqAmeSubLine::segments() const
 {
     return m_segments;
 }
+
+IqAmeLine *IqAmeSubLine::line() const
+{
+    return m_line;
+}
+
+void IqAmeSubLine::setLine(IqAmeLine *line)
+{
+    m_line = line;
+}
+
 
 bool IqAmeSubLine::loadFromString(const QString &string)
 {

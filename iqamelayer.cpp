@@ -12,7 +12,7 @@ IqAmeLayer::IqAmeLayer(QObject *parent) :
     m_shapesModel(new IqAmeShapesModel(this)),
     m_childLayers(QList<IqAmeLayer *>()),
     m_parentLayer(Q_NULLPTR),
-    m_graphicsItem(Q_NULLPTR)
+    m_visible(false)
 {
 }
 
@@ -142,13 +142,14 @@ void IqAmeLayer::setVideomapName(const QString &videomapName)
 
 bool IqAmeLayer::visible()
 {
-    return graphicsItem()->isVisible();
+    return m_visible;
 }
 
 void IqAmeLayer::setVisible(const bool visible)
 {
-    if (graphicsItem()->isVisible() != visible) {
-        graphicsItem()->setVisible(visible);
+    if (m_visible != visible) {
+        m_visible = visible;
+        updateGraphicsItem();
         emit visibleChanged();
     }
 }
@@ -207,28 +208,16 @@ bool IqAmeLayer::loadFromFile(const QString &fileName, QString *lastError)
     return m_shapesModel->loadFromFile(fileName, lastError);
 }
 
-IqAmeLayerGraphicsItem *IqAmeLayer::graphicsItem()
-{
-    if (!m_graphicsItem) {
-        m_graphicsItem = new IqAmeLayerGraphicsItem();
-        m_graphicsItem->setLayer(this);
-
-        foreach (IqAmeShapeObject *shape, shapesModel()->toList()) {
-            Q_CHECK_PTR(shape);
-            m_graphicsItem->addToGroup(shape->graphicsItem());
-        }
-
-        m_graphicsItem->setVisible(false);
-        IqAmeApplication::graphicsScene()->addItem(m_graphicsItem);
-    }
-
-    return m_graphicsItem;
-}
-
 void IqAmeLayer::updateGraphicsItem()
 {
-    foreach (IqAmeShapeObject *shape, shapesModel()->toList()) {
-        shape->updateGraphicsItem();
+    foreach (IqAmeNamedShapeObject *shape, shapesModel()->toList()) {
+        Q_CHECK_PTR(shape);
+        shape->setVisible(visible());
+        shape->updateGraphicsItems();
+        foreach (QGraphicsItem *item, shape->graphicsItems()) {
+            Q_CHECK_PTR(item);
+            IqAmeApplication::graphicsScene()->addItem(item);
+        }
     }
 }
 

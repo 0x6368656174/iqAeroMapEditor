@@ -22,17 +22,17 @@ IqAmeGeoPointsTableView::IqAmeGeoPointsTableView(QWidget *parent) :
     QTableView::setModel(m_sortFilterModel);
 
     m_addPointAction->setText(tr("Add point"));
-    m_addPointAction->setIcon(QIcon("://icons/table_row_insert.png"));
+    m_addPointAction->setIcon(QIcon("://icons/appbar.list.add.png"));
     connect(m_addPointAction, SIGNAL(triggered()), this, SLOT(addRow()));
     m_contextMenu->addAction(m_addPointAction);
 
     m_removePointAction->setText(tr("Remove point"));
-    m_removePointAction->setIcon(QIcon("://icons/table_row_delete.png"));
+    m_removePointAction->setIcon(QIcon("://icons/appbar.list.delete.inline.png"));
     connect(m_removePointAction, SIGNAL(triggered()), this, SLOT(removeSelectedRows()));
     m_contextMenu->addAction(m_removePointAction);
 
     m_pointDependingAction->setText(tr("Point depending"));
-    m_pointDependingAction->setIcon(QIcon("://icons/arrow_switch.png"));
+    m_pointDependingAction->setIcon(QIcon("://icons/appbar.link.png"));
     connect(m_pointDependingAction, SIGNAL(triggered()), this, SLOT(showPointDepending()));
     m_contextMenu->addAction(m_pointDependingAction);
 

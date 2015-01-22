@@ -28,9 +28,9 @@ public:
 
 private:
     IqAmeGeoHelper();
-    static IqAmeGeoHelper *_instance;
+    static IqAmeGeoHelper *m_instance;
     static IqAmeGeoHelper * instance();
-    LocalCartesian _localCartesian;
+    LocalCartesian m_localCartesian;
 };
 
 #endif // IQAMEGEOHELPER_H

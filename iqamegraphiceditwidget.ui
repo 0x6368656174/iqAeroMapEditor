@@ -16,20 +16,12 @@
   <widget class="IqLayerView" name="openGlWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>373</x>
-     <y>4</y>
-     <width>364</width>
-     <height>406</height>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>30</height>
     </rect>
    </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <zorder>dockWidget</zorder>
-   <zorder>dockWidget</zorder>
   </widget>
   <widget class="QTableView" name="shapesTableView">
    <property name="geometry">
@@ -39,6 +31,9 @@
      <width>256</width>
      <height>192</height>
     </rect>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
    </property>
   </widget>
  </widget>

@@ -11,6 +11,7 @@
 #include "iqameshapeobject.h"
 #include "iqamesublinegraphicsitem.h"
 
+class IqAmeLine;
 class IqAmeSubLine : public IqAmeShapeObject
 {
     Q_OBJECT
@@ -19,11 +20,9 @@ public:
 
     ~IqAmeSubLine();
 
-    virtual IqAmeSublineGraphicsItem *graphicsItem() Q_DECL_OVERRIDE;
+    IqAmeSublineGraphicsItem *graphicsItem();
 
-    virtual void updateGraphicsItem() Q_DECL_OVERRIDE;
-
-    virtual bool loadFromString(const QString &string) Q_DECL_OVERRIDE;
+    bool loadFromString(const QString &string);
 
     void appendSegment(IqAmeLineSegment *segment);
 
@@ -34,7 +33,11 @@ public:
 public:
     QList<IqAmeLineSegment *> segments() const;
 
+    IqAmeLine *line() const;
+    void setLine(IqAmeLine *line);
+
 private:
+    IqAmeLine *m_line;
     QList<IqAmeLineSegment *> m_segments;
     IqAmeSublineGraphicsItem *m_graphicsItem;
 };

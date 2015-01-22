@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "iqamelayer.h"
+#include <QItemSelection>
 
 namespace Ui {
 class IqAmeGraphicEditWidget;
@@ -19,6 +20,14 @@ public:
 
 private:
     Ui::IqAmeGraphicEditWidget *ui;
+
+    void updateTableSelected();
+
+    void updateGraphicsViewSelected();
+
+private:
+    bool m_updataTableSelectedInProcess;
+    bool m_updateGraphicsViewSelectedInProcess;
 };
 
 #endif // IQAMEGRAPHICEDITWIDGET_H

@@ -18,34 +18,36 @@ IqAmeText::~IqAmeText()
         delete m_graphicsTextItem;
 }
 
-IqAmeTextGraphicsItem *IqAmeText::graphicsItem()
+QList<QGraphicsItem *> IqAmeText::graphicsItems()
+{
+    QList<QGraphicsItem *> result;
+    result << textGraphicsItem();
+    return result;
+}
+
+IqAmeTextGraphicsItem *IqAmeText::textGraphicsItem()
 {
     if (!m_graphicsTextItem) {
-        if (point() && outputAttributes()) {
-            m_graphicsTextItem = new IqAmeTextGraphicsItem();
-            m_graphicsTextItem->setText(this);
-            m_graphicsTextItem->updateCache();
-        }
+        m_graphicsTextItem = new IqAmeTextGraphicsItem();
+        m_graphicsTextItem->setText(this);
+        m_graphicsTextItem->setNamedShapeObject(this);
     }
 
     return m_graphicsTextItem;
 }
 
-void IqAmeText::updateGraphicsItem()
+void IqAmeText::updateGraphicsItems()
 {
-    QGraphicsSimpleTextItem *textItem = graphicsItem();
-    if (textItem) {
-        textItem->setText(text());
-        textItem->setPos(point()->toGlPoint());
-        textItem->setBrush(QBrush(outputAttributes()->rgbColor()));
-    }
+    IqAmeTextGraphicsItem *textItem = textGraphicsItem();
+    Q_CHECK_PTR(textItem);
+    textItem->setVisible(visible());
+    textItem->updateCache();
 }
 
 void IqAmeText::setText(const QString &text)
 {
     if (m_text != text) {
         m_text = text;
-
         emit textChanged();
     }
 }
@@ -124,9 +126,11 @@ bool IqAmeText::loadFromString(const QString &string)
 
         setPoint(p);
         setText(stringRx.cap(2));
+
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 QString IqAmeText::text() const

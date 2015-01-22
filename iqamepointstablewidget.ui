@@ -14,7 +14,16 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -36,7 +45,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/icons/arrow_switch.png</normaloff>:/icons/arrow_switch.png</iconset>
+         <normaloff>:/icons/appbar.link.png</normaloff>:/icons/appbar.link.png</iconset>
        </property>
       </widget>
      </item>
@@ -60,7 +69,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/icons/table_row_insert.png</normaloff>:/icons/table_row_insert.png</iconset>
+         <normaloff>:/icons/appbar.list.add.png</normaloff>:/icons/appbar.list.add.png</iconset>
        </property>
       </widget>
      </item>
@@ -74,7 +83,7 @@
        </property>
        <property name="icon">
         <iconset resource="icons.qrc">
-         <normaloff>:/icons/table_row_delete.png</normaloff>:/icons/table_row_delete.png</iconset>
+         <normaloff>:/icons/appbar.list.delete.inline.png</normaloff>:/icons/appbar.list.delete.inline.png</iconset>
        </property>
       </widget>
      </item>

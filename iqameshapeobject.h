@@ -20,12 +20,6 @@ public:
 
     virtual ~IqAmeShapeObject();
 
-    virtual QGraphicsItem *graphicsItem() = 0;
-
-    virtual void updateGraphicsItem() = 0;
-
-    virtual bool loadFromString(const QString &string) = 0;
-
     virtual IqAmeShapesAttributes *outputAttributes() const;
 
 public:
@@ -43,7 +37,6 @@ signals:
 private:
     IqAmeShapesAttributes *m_inputAttributes;
     IqAmeShapesAttributes *m_attributes;
-    QGraphicsItem *m_graphicsItem;
 };
 
 Q_DECLARE_METATYPE(IqAmeShapeObject *)

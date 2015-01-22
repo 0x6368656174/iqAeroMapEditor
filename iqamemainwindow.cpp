@@ -8,6 +8,7 @@
 #endif
 #include <QFileDialog>
 #include <QFutureWatcher>
+#include <QApplication>
 
 IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,8 +18,8 @@ IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     ui->layerTreeView->setModel(IqAmeApplication::aeroMapModel());
-    connect(ui->layerTreeView, SIGNAL(pointsClicked()), this, SLOT(showPoints()));
-    connect(ui->layerTreeView, SIGNAL(layerClicked(IqAmeLayer*)), this, SLOT(showLayer(IqAmeLayer*)));
+    connect(ui->layerTreeView, &IqAmeMapModelTreeView::pointsClicked, this, &IqAmeMainWindow::showPoints);
+    connect(ui->layerTreeView, &IqAmeMapModelTreeView::layerClicked, this, &IqAmeMainWindow::showLayer);
 
     ui->pointTableWidget->setModel(IqAmeApplication::aeroMapModel()->pointsModel());
 
@@ -74,7 +75,7 @@ void IqAmeMainWindow::onLoadFinished()
     IqAmeApplication::aeroMapModel()->endLoadData();
     QApplication::restoreOverrideCursor();
     qDebug() << tr("LOAD MAP DATA FINISHED IN %0 sec")
-             .arg(m_loadTimer.elapsed()/1000);
+                .arg(m_loadTimer.elapsed()/1000);
 }
 
 void IqAmeMainWindow::showPoints()

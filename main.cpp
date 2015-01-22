@@ -8,10 +8,10 @@
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString msgToWrite (msg);
-    msgToWrite.append(QString("(file: %0, funcion: %1, line: %2)")
-               .arg(context.file)
-               .arg(context.function)
-               .arg(context.line));
+//    msgToWrite.append(QString("(file: %0, funcion: %1, line: %2)")
+//               .arg(context.file)
+//               .arg(context.function)
+//               .arg(context.line));
 #else
 void myMessageOutput(QtMsgType type, const char *msg)
 {

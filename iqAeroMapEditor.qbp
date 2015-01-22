@@ -1,0 +1,96 @@
+import qbs.base 1.3
+
+Product: {
+    name: "iqAeroMapEditor"
+    type: "application"
+
+    Depends {
+        name: "cpp"
+    }
+
+    Depends {
+        name: "Qt"
+        submodules: [
+            "core",
+            "qui"
+        ]
+    }
+    
+    cpp.includePaths: [
+        "/home/pashok/local/include/"
+    ]
+    cpp.dynamicLibraries: [
+        "Geographics"
+    ]
+    cpp.libraryPaths: [
+        "/home/pashok/local/lib"
+    ]
+
+    files: [
+        "main.cpp",
+        "iqamemainwindow.cpp",
+        "iqameatdmenueditdialog.cpp",
+        "iqamelayer.cpp",
+        "iqamemapmodel.cpp",
+        "iqameapplication.cpp",
+        "iqlayerview.cpp",
+        "iqamegeopoint.cpp",
+        "iqamegeopointsmodel.cpp",
+        "iqamegeohelper.cpp",
+        "iqamegeopointstabledelegate.cpp",
+        "iqamegeopointstableview.cpp",
+        "iqamepointstablewidget.cpp",
+        "iqamemapmodeltreeview.cpp",
+        "iqameline.cpp",
+        "iqamesubline.cpp",
+        "iqamelinesegment.cpp",
+        "iqamestraightlinesegment.cpp",
+        "iqameshapesmodel.cpp",
+        "iqamegraphiceditwidget.cpp",
+        "iqameshapesattributes.cpp",
+        "iqameshapeobject.cpp",
+        "iqametext.cpp",
+        "iqamegeopointssortfiltermodel.cpp",
+        "iqamelogdialog.cpp",
+        "iqamenamedshapeobject.cpp",
+        "iqamesublinegraphicsitem.cpp",
+        "iqamelinegraphicsitem.cpp",
+        "iqamelayergraphicsitem.cpp",
+        "iqametextgraphicsitem.cpp",                                                                                                                                                                                                       
+        "iqamemainwindow.h",
+        "iqameatdmenueditdialog.h",
+        "iqamelayer.h",
+        "iqamemapmodel.h",
+        "iqameapplication.h",
+        "iqlayerview.h",
+        "iqamegeopoint.h",
+        "iqamegeopointsmodel.h",
+        "iqamegeohelper.h",
+        "iqamegeopointstabledelegate.h",
+        "iqamegeopointstableview.h",
+        "iqamepointstablewidget.h",
+        "iqamemapmodeltreeview.h",
+        "iqameline.h",
+        "iqamesubline.h",
+        "iqamelinesegment.h",
+        "iqamestraightlinesegment.h",
+        "iqameshapesmodel.h",
+        "iqamegraphiceditwidget.h",
+        "iqameshapesattributes.h",
+        "iqameshapeobject.h",
+        "iqametext.h",
+        "iqamegeopointssortfiltermodel.h",
+        "iqamelogdialog.h",
+        "iqamenamedshapeobject.h",
+        "iqamesublinegraphicsitem.h",
+        "iqamelinegraphicsitem.h",
+        "iqamelayergraphicsitem.h",
+        "iqametextgraphicsitem.h",
+        "iqamemainwindow.ui",
+        "iqameatdmenueditdialog.ui",
+        "iqamepointstablewidget.ui",
+        "iqamegraphiceditwidget.ui",
+        "iqamelogdialog.ui",
+        "icons.qrc"
+    ]
+}

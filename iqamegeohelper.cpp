@@ -2,7 +2,7 @@
 #include <math.h>
 #include <QRegExp>
 
-IqAmeGeoHelper * IqAmeGeoHelper::_instance = Q_NULLPTR;
+IqAmeGeoHelper * IqAmeGeoHelper::m_instance = Q_NULLPTR;
 
 IqAmeGeoHelper::IqAmeGeoHelper()
 {
@@ -10,23 +10,23 @@ IqAmeGeoHelper::IqAmeGeoHelper()
 
 IqAmeGeoHelper * IqAmeGeoHelper::instance()
 {
-    if (IqAmeGeoHelper::_instance) {
-        return IqAmeGeoHelper::_instance;
+    if (IqAmeGeoHelper::m_instance) {
+        return IqAmeGeoHelper::m_instance;
     } else {
-        IqAmeGeoHelper::_instance = new IqAmeGeoHelper();
-        return IqAmeGeoHelper::_instance;
+        IqAmeGeoHelper::m_instance = new IqAmeGeoHelper();
+        return IqAmeGeoHelper::m_instance;
     }
     return Q_NULLPTR;
 }
 
 void IqAmeGeoHelper::setLocalCartesianOrigin(const qreal latitude, const qreal longitude)
 {
-    IqAmeGeoHelper::instance()->_localCartesian = LocalCartesian(latitude, longitude, 0);
+    IqAmeGeoHelper::instance()->m_localCartesian = LocalCartesian(latitude, longitude, 0);
 }
 
 void IqAmeGeoHelper::toLocalCartesian(const qreal latitude, const qreal longitude, const qreal altitude,  qreal &x, qreal &y, qreal &z)
 {
-    IqAmeGeoHelper::instance()->_localCartesian.Forward(latitude, longitude, altitude, x, y, z);
+    IqAmeGeoHelper::instance()->m_localCartesian.Forward(latitude, longitude, altitude, x, y, z);
 }
 
 bool IqAmeGeoHelper::coordinateFromString(const QString &string, qreal &latitude, qreal &longitude)

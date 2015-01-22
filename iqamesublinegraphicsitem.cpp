@@ -1,8 +1,10 @@
 #include "iqamesublinegraphicsitem.h"
 #include "iqamesubline.h"
+#include <QDebug>
 
 IqAmeSublineGraphicsItem::IqAmeSublineGraphicsItem(QGraphicsItem *parent) :
     QGraphicsItem(parent),
+    IqAmeShapeLink(),
     m_subLine(Q_NULLPTR)
 {
 }
@@ -11,8 +13,7 @@ void IqAmeSublineGraphicsItem::updateCache()
 {
     m_painterPath = QPainterPath();
 
-    foreach (IqAmeLineSegment* segment, m_subLine->segments())
-    {
+    foreach (IqAmeLineSegment* segment, m_subLine->segments()) {
         segment->drawSegment(&m_painterPath);
     }
 
@@ -36,6 +37,15 @@ void IqAmeSublineGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphi
     Q_UNUSED(widget);
     Q_UNUSED(option);
 
-    painter->setPen(m_subLine->outputAttributes()->pen());
+    QPen pen = m_subLine->outputAttributes()->pen();
+    if (isSelected())
+        pen.setColor("blue");
+
+    painter->setPen(pen);
     painter->drawPath(m_painterPath);
+}
+
+QPainterPath IqAmeSublineGraphicsItem::shape() const
+{
+    return m_painterPath;
 }

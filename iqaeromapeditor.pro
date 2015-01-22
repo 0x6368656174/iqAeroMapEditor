@@ -6,9 +6,11 @@
 
 QT       += core gui opengl
 
-LIBS     += -L/home/pashok/libs/geographic/lib/ -lGeographic
+LIBS     += -L/home/pashok/local/lib/ -lGeographic
 
-INCLUDEPATH += /home/pashok/libs/geographic/include/
+INCLUDEPATH += /home/pashok/local/include/
+
+CONFIG   += C++11
 
 #LIBS += -LC:\Qt\5.3\mingw482_32\bin -lGeographic9
 

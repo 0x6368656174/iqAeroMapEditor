@@ -13,26 +13,22 @@ class IqLayerView : public QGraphicsView
 public:
     explicit IqLayerView(QWidget *parent = Q_NULLPTR);
 
-//    void setCurrentLayer(const IqAmeLayer *layer);
+signals:
+    void selectionFinished();
 
-//    QPointF mapToGeo(const QPoint &screenPoint) const;
-
-//    QPoint mapFromGeo(const QPointF &geoPoint) const;
-
-//protected:
-//    void resizeGL(int nWidth, int nHeight);
-//    void paintGL();
+protected:
     void wheelEvent(QWheelEvent * event);
-//    void mousePressEvent(QMouseEvent * event);
-//    void mouseReleaseEvent(QMouseEvent * event);
-//    void mouseMoveEvent(QMouseEvent * event);
+    void mousePressEvent(QMouseEvent * event);
+    void mouseReleaseEvent(QMouseEvent * event);
+    void mouseMoveEvent(QMouseEvent * event);
 
-//private:
-//    qreal _zoomFactor;
-//    QPoint _center;
-//    QPoint _pressCenter;
-//    QPoint _pressMousePos;
-//    bool _translationEnabled;
+private:
+    void updateItemsStack();
+
+private:
+    bool m_pan;
+    QPoint m_panStartPoint;
+    QSet<QGraphicsItem *> m_oldSelectedItems;
 };
 
 #endif // IQLAYERVIEW_H

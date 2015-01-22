@@ -3,8 +3,7 @@
 IqAmeShapeObject::IqAmeShapeObject(QObject *parent) :
     QObject(parent),
     m_inputAttributes(Q_NULLPTR),
-    m_attributes(Q_NULLPTR),
-    m_graphicsItem(Q_NULLPTR)
+    m_attributes(Q_NULLPTR)
 {
 }
 

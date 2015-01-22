@@ -11,7 +11,8 @@
 
 IqAmeShapesModel::IqAmeShapesModel(QObject *parent) :
     QAbstractTableModel(parent),
-    m_baseAttributes(new IqAmeShapesAttributes(this))
+    m_baseAttributes(new IqAmeShapesAttributes(this)),
+    m_interactive(false)
 {
 }
 
@@ -190,3 +191,20 @@ int IqAmeShapesModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     return m_shapes.count();
 }
+bool IqAmeShapesModel::interactive() const
+{
+    return m_interactive;
+}
+
+void IqAmeShapesModel::setInteractive(bool interactive)
+{
+    if (m_interactive != interactive) {
+        m_interactive = interactive;
+        foreach (IqAmeNamedShapeObject *object, m_shapes) {
+            Q_CHECK_PTR(object);
+            object->setInteractive(interactive);
+        }
+        emit interactiveChanged();
+    }
+}
+
