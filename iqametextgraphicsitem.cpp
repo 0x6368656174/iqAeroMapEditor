@@ -42,3 +42,11 @@ void IqAmeTextGraphicsItem::setText(IqAmeText *text)
     if (m_text != text)
         m_text = text;
 }
+
+
+QPainterPath IqAmeTextGraphicsItem::shape() const
+{
+    QPainterPath result;
+    result.addRect(boundingRect());
+    return result;
+}

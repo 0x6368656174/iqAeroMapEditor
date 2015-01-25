@@ -58,7 +58,7 @@ void IqLayerView::mouseReleaseEvent(QMouseEvent *event)
     }
     QGraphicsView::mouseReleaseEvent(event);
 
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton || event->button() == Qt::RightButton)
         emit selectionFinished();
 }
 

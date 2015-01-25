@@ -15,6 +15,8 @@ public:
 public:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) Q_DECL_OVERRIDE;
 
+    virtual QPainterPath shape() const;
+
 public:
     void setText(IqAmeText *text);
 
