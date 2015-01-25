@@ -65,23 +65,31 @@ void IqAmeGraphicEditWidget::updateTableSelected()
 
     ui->shapesTableView->clearSelection();
 
+    QHash<QGraphicsItem *, int> itemsRows;
+    int i = 0;
+    foreach (IqAmeNamedShapeObject *shapeObject, shapeModel->toList()) {
+        foreach (QGraphicsItem *item, shapeObject->graphicsItems()) {
+            itemsRows[item] = i;
+        }
+        i++;
+    }
+
+    QItemSelection selection;
+    QAbstractItemModel *model =ui->shapesTableView->model();
+    int lastColumnt = model->columnCount() - 1;
+    Q_ASSERT(lastColumnt > -1);
+    int itemTableRow = -1;
     int lastFoundItem = -1;
     foreach (QGraphicsItem *item, IqAmeApplication::graphicsScene()->selectedItems()) {
-        Q_CHECK_PTR(item);
-        IqAmeShapeLink *shapeLink = dynamic_cast<IqAmeShapeLink *>(item);
-        Q_CHECK_PTR(shapeLink);
-        Q_CHECK_PTR(shapeLink->namedShapeObject());
-
-        int i = 0;
-        foreach (IqAmeNamedShapeObject *shapeObject, shapeModel->toList()) {
-            if (shapeObject == shapeLink->namedShapeObject()) {
-                //Выделим объект
-                ui->shapesTableView->selectionModel()->select(ui->shapesTableView->model()->index(i, 0), QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                lastFoundItem = i;
-            }
-            ++i;
+        itemTableRow = itemsRows[item];
+        if (itemTableRow != -1) {
+            selection.select(model->index(itemTableRow, 0),
+                             model->index(itemTableRow, lastColumnt));
+            lastFoundItem = itemTableRow;
         }
     }
+
+    ui->shapesTableView->selectionModel()->select(selection, QItemSelectionModel::Select);
 
     if (lastFoundItem != -1)
         ui->shapesTableView->scrollTo(ui->shapesTableView->model()->index(lastFoundItem, 0), QAbstractItemView::PositionAtCenter);
@@ -100,30 +108,15 @@ void IqAmeGraphicEditWidget::updateGraphicsViewSelected()
 
     m_updateGraphicsViewSelectedInProcess = true;
 
-    QSet<QGraphicsItem *> currentSelectedItem = IqAmeApplication::graphicsScene()->selectedItems().toSet();
-    QSet<QGraphicsItem *> itemToSelect;
+    IqAmeApplication::graphicsScene()->clearSelection();
 
     foreach (const QModelIndex &index, ui->shapesTableView->selectionModel()->selectedRows()) {
         IqAmeNamedShapeObject *shapeObject = shapeModel->toList().at(index.row());
         Q_CHECK_PTR(shapeObject);
         foreach (QGraphicsItem *item, shapeObject->graphicsItems()) {
             Q_CHECK_PTR(item);
-            if (currentSelectedItem.contains(item)) {
-                currentSelectedItem.remove(item);
-                continue;
-            }
-            itemToSelect << item;
+            item->setSelected(true);
         }
-    }
-
-    foreach (QGraphicsItem *item, currentSelectedItem) {
-        Q_CHECK_PTR(item);
-        item->setSelected(false);
-    }
-
-    foreach (QGraphicsItem *item, itemToSelect) {
-        Q_CHECK_PTR(item);
-        item->setSelected(true);
     }
 
     m_updateGraphicsViewSelectedInProcess = false;

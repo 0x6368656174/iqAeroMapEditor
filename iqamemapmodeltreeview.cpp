@@ -4,7 +4,7 @@ IqAmeMapModelTreeView::IqAmeMapModelTreeView(QWidget *parent) :
     QTreeView(parent),
     m_mapModel(Q_NULLPTR)
 {
-    connect(this, SIGNAL(activated(QModelIndex)), this, SLOT(onActivated(QModelIndex)));
+    connect(this, SIGNAL(clicked(QModelIndex)), this, SLOT(onActivated(QModelIndex)));
 }
 
 void IqAmeMapModelTreeView::setModel(IqAmeMapModel *model)
