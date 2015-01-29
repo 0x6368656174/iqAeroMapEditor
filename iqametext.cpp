@@ -87,22 +87,23 @@ bool IqAmeText::loadFromString(const QString &string)
     QRegExp extraCommentsRx("\\*[^\\*]*\\*");
     clearString.remove(extraCommentsRx);
 
+    QString textString = clearString.trimmed();
+
     //Выделим атрибуты
     QRegExp attributeRx("(<\\s*[^>]*\\s*>)(.*)");
     attributeRx.setCaseSensitivity(Qt::CaseInsensitive);
 
-    if (attributeRx.indexIn(string) != -1) {
+    if (attributeRx.indexIn(clearString) != -1) {
         //Нашли атрибуты, создадим их
         if (!attributes()) {
             setAttributes(new IqAmeShapesAttributes(this));
         }
         attributes()->loadFromString(attributeRx.cap(1));
+        textString = attributeRx.cap(2).trimmed();
     }
 
-    QString textString = attributeRx.cap(2);
-    textString = textString.trimmed();
 
-    QRegExp stringRx("([^\\/]*)\\s*\\/([^\\/]*)\\/");
+    QRegExp stringRx("^([^\\/]*)\\s*\\/([^\\/]*)\\/$");
 
     if (stringRx.indexIn(textString) != -1) {
         QString pName = stringRx.cap(1);

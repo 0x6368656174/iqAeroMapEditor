@@ -5,6 +5,7 @@
 #include <QTextCodec>
 #include <QGraphicsScene>
 #include "iqamemapmodel.h"
+#include <QGraphicsView>
 
 class IqAmeApplication : public QObject
 {
@@ -18,9 +19,13 @@ public:
 
     static QGraphicsScene *graphicsScene();
 
+    static QGraphicsView *mapView();
+    static void setMapView(QGraphicsView *mapView);
+
 private:
     static IqAmeMapModel *m_aeroMapModel;
     static QGraphicsScene *m_graphicsScene;
+    static QGraphicsView *m_mapView;
 };
 
 #endif // IQAMEAPPLICATION_H

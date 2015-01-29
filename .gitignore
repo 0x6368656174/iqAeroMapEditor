@@ -16,6 +16,7 @@
 /.qmake.stash
 *.pro.user
 CMakeLists.txt.user
+CMakeLists.txt.user.*
 *.pro.user.*
 *.moc
 moc_*.cpp

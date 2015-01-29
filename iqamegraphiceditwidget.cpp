@@ -24,6 +24,8 @@ IqAmeGraphicEditWidget::IqAmeGraphicEditWidget(QWidget *parent) :
     setLayout(layout);
 
     connect(ui->openGlWidget, &IqLayerView::selectionFinished, this, &IqAmeGraphicEditWidget::updateTableSelected);
+
+    IqAmeApplication::setMapView(ui->openGlWidget);
 }
 
 IqAmeGraphicEditWidget::~IqAmeGraphicEditWidget()

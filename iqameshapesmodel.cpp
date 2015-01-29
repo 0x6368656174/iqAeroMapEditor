@@ -3,6 +3,7 @@
 
 #include "iqameline.h"
 #include "iqametext.h"
+#include "iqamesymbol.h"
 
 #include <QFile>
 #include <QDebug>
@@ -115,6 +116,16 @@ bool IqAmeShapesModel::loadFromFile(const QString &fileName, QString *lastError)
                     qWarning() << tr("Can not parse text string \"%0\". Skipped.").arg(shape);
                     text->deleteLater();
                 }
+            } else if (shapeType.compare("SYMB", Qt::CaseInsensitive) == 0 || shapeType.compare("S", Qt::CaseInsensitive) == 0) {
+                IqAmeSymbol *symbol = new IqAmeSymbol(this);
+                symbol->setInputAttributes(previosShapeOutputAttribute);
+                if (symbol->loadFromString(shape)) {
+                    m_shapes << symbol;
+                    previosShapeOutputAttribute = symbol->outputAttributes();
+                } else {
+                    qWarning() << tr("Can not parse symbol string \"%0\". Skipped.").arg(shape);
+                    symbol->deleteLater();
+                }
             }
         }
     }
@@ -142,6 +153,10 @@ QVariant IqAmeShapesModel::data(const QModelIndex &index, int role) const
             IqAmeText *text = qobject_cast<IqAmeText *>(shape);
             if (text) {
                 return "T";
+            }
+            IqAmeSymbol *symbol = qobject_cast<IqAmeSymbol *>(shape);
+            if (symbol) {
+                return "S";
             }
 
             break;
