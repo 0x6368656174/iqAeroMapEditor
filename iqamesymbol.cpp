@@ -14,6 +14,8 @@ IqAmeSymbol::IqAmeSymbol(QObject *parent) :
 
 IqAmeSymbol::~IqAmeSymbol()
 {
+    if (m_graphicsSymbolItem)
+        delete m_graphicsSymbolItem;
 }
 
 QList<QGraphicsItem *> IqAmeSymbol::graphicsItems()

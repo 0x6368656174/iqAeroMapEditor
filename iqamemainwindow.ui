@@ -57,7 +57,7 @@
      <x>0</x>
      <y>0</y>
      <width>643</width>
-     <height>33</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,8 +74,24 @@
     </property>
     <addaction name="actionLogs"/>
    </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <widget class="QMenu" name="menuRenderhints">
+     <property name="title">
+      <string>&amp;Renderhints</string>
+     </property>
+     <addaction name="actionAntialiasing"/>
+     <addaction name="actionTextAntialiasing"/>
+     <addaction name="actionSmoothPixmapTransform"/>
+     <addaction name="actionHighQualityAntialiasing"/>
+    </widget>
+    <addaction name="menuRenderhints"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -111,6 +127,38 @@
   <action name="actionLogs">
    <property name="text">
     <string>&amp;Logs</string>
+   </property>
+  </action>
+  <action name="actionAntialiasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Antialiasing</string>
+   </property>
+  </action>
+  <action name="actionTextAntialiasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Text Antialiasing</string>
+   </property>
+  </action>
+  <action name="actionSmoothPixmapTransform">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Smooth Pixmap Transform</string>
+   </property>
+  </action>
+  <action name="actionHighQualityAntialiasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;HighQualityAntialiasing</string>
    </property>
   </action>
  </widget>

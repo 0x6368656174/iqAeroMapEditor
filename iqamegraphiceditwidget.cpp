@@ -54,6 +54,11 @@ void IqAmeGraphicEditWidget::setLayer(IqAmeLayer *layer)
     }
 }
 
+void IqAmeGraphicEditWidget::setMapViewRenderHint(QPainter::RenderHint hint, bool on)
+{
+    ui->openGlWidget->setRenderHint(hint, on);
+}
+
 void IqAmeGraphicEditWidget::updateTableSelected()
 {
     IqAmeShapesModel *shapeModel = qobject_cast<IqAmeShapesModel *>(ui->shapesTableView->model());

@@ -13,8 +13,6 @@ IqLayerView::IqLayerView(QWidget *parent) :
     QGraphicsView(parent),
     m_pan(false)
 {
-    setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::TextAntialiasing);
-
     setBackgroundBrush(QBrush(QColor(192,192,192)));
     setOptimizationFlag(QGraphicsView::DontSavePainterState);
 

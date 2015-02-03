@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QFutureWatcher>
 #include <QApplication>
+#include <QSettings>
 
 IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -35,6 +36,11 @@ IqAmeMainWindow::IqAmeMainWindow(QWidget *parent) :
 
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFolder()));
     connect(ui->actionLogs, SIGNAL(triggered()), this, SLOT(showLogs()));
+
+    connect(ui->actionAntialiasing, &QAction::triggered, this, &IqAmeMainWindow::updateRenderhints);
+    connect(ui->actionTextAntialiasing, &QAction::triggered, this, &IqAmeMainWindow::updateRenderhints);
+    connect(ui->actionSmoothPixmapTransform, &QAction::triggered, this, &IqAmeMainWindow::updateRenderhints);
+    connect(ui->actionHighQualityAntialiasing, &QAction::triggered, this, &IqAmeMainWindow::updateRenderhints);
 
     ui->editorWidget->hide();
     ui->pointTableWidget->show();
@@ -76,6 +82,14 @@ void IqAmeMainWindow::onLoadFinished()
     QApplication::restoreOverrideCursor();
     qDebug() << tr("LOAD MAP DATA FINISHED IN %0 sec")
                 .arg(m_loadTimer.elapsed()/1000);
+}
+
+void IqAmeMainWindow::updateRenderhints()
+{
+    ui->editorWidget->setMapViewRenderHint(QPainter::Antialiasing, ui->actionAntialiasing->isChecked());
+    ui->editorWidget->setMapViewRenderHint(QPainter::TextAntialiasing, ui->actionTextAntialiasing->isChecked());
+    ui->editorWidget->setMapViewRenderHint(QPainter::SmoothPixmapTransform, ui->actionSmoothPixmapTransform->isChecked());
+    ui->editorWidget->setMapViewRenderHint(QPainter::HighQualityAntialiasing, ui->actionHighQualityAntialiasing->isChecked());
 }
 
 void IqAmeMainWindow::showPoints()

@@ -27,6 +27,7 @@ private slots:
     void openFolder();
     void showLogs();
     void onLoadFinished();
+    void updateRenderhints();
 
 private:
     Ui::IQAMEMainWindow *ui;

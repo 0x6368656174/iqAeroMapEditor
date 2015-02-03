@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "iqamelayer.h"
 #include <QItemSelection>
+#include <QPainter>
 
 namespace Ui {
 class IqAmeGraphicEditWidget;
@@ -17,6 +18,8 @@ public:
     ~IqAmeGraphicEditWidget();
 
     void setLayer(IqAmeLayer *layer);
+
+    void setMapViewRenderHint(QPainter::RenderHint hint, bool on = true);
 
 private:
     Ui::IqAmeGraphicEditWidget *ui;

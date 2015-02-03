@@ -14,7 +14,7 @@ IqAmeText::IqAmeText(QObject *parent) :
 
 IqAmeText::~IqAmeText()
 {
-    if (m_graphicsTextItem && !m_graphicsTextItem->parentItem())
+    if (m_graphicsTextItem)
         delete m_graphicsTextItem;
 }
 
