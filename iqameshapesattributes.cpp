@@ -249,18 +249,18 @@ QPen IqAmeShapesAttributes::pen() const
 QFont IqAmeShapesAttributes::font() const
 {
     QFont font;
-    font.setPointSize(6);
+    font.setPixelSize(10);
     switch (textSize()) {
     case IqAmeShapesAttributes::R1:
         break;
     case IqAmeShapesAttributes::R2:
-        font.setPointSize(font.pointSize() * 1.5);
+        font.setPixelSize(font.pixelSize() * 1.5);
         break;
     case IqAmeShapesAttributes::R3:
-        font.setPointSize(font.pointSize() * 2);
+        font.setPixelSize(font.pixelSize() * 2);
         break;
     case IqAmeShapesAttributes::R4:
-        font.setPointSize(font.pointSize() * 2.5);
+        font.setPixelSize(font.pixelSize() * 2.5);
         break;
     }
 

@@ -28,7 +28,6 @@ void IqAmeSymbol::updateGraphicsItems()
     IqAmeSymbolGraphicsItem *symbolItem = symbolGraphicsItem();
     Q_CHECK_PTR(symbolItem);
     symbolItem->setVisible(visible());
-    symbolItem->updateCache();
 }
 
 IqAmeSymbolGraphicsItem *IqAmeSymbol::symbolGraphicsItem()
